@@ -1,79 +1,33 @@
-## Session: GitHub Integration - 2026-09-01 21:58
+## Session: First Autopilot Run - Work in Progress
 
-**Goal:** Connect Obsidian vault to GitHub for backup + daily auto-sync
+**Status:** RUNNING (Voice synthesis / Render stage)
 
-**Completed:**
-✅ SSH key generated (ed25519)
-✅ SSH key added to GitHub
-✅ GitHub repo created: kscmrt/hermes-obsidian-vault (public)
-✅ Local repo connected: git@github.com:kscmrt/hermes-obsidian-vault.git
-✅ Pushed all commits to main branch
-✅ Created hermes-vault-sync script (daily pull/push)
-✅ Added cron job: 9 AM & 6 PM daily
-✅ Tested sync: working ✓
+**Progress So Far:**
+✅ Stage 1: RSS feed → Found news
+✅ Stage 2: Content generation → Using fallback JSON (Hermes integration pending)
+⏳ Stage 3: Voice synthesis → Running (coqui-env)
+⏳ Stage 4: Remotion render → Pending
+⏳ Stage 5: YouTube upload → Pending
 
-**Backup Strategy:**
-- **Local:** `/home/kscmrt/Hermes-Obsidian-Hafiza/` (primary)
-- **GitHub:** https://github.com/kscmrt/hermes-obsidian-vault (backup)
-- **Auto-sync:** Daily 9 AM & 6 PM (pull → commit → push)
-- **SSH:** No token exposure (ed25519 key based)
+**Article Selected:**
+"Eski Yunan Bakandan İsrail ile yapılan anlaşmaya utanç verici yorumu"
 
-**Workflow Now:**
-```
-1. Local work: hermes-vault "question" or manual edits
-2. Auto-sync: 9 AM - pulls latest, commits changes, pushes
-3. GitHub: Always in sync
-4. Next machine: git clone → ready to go
-```
+**Architecture Working:**
+- ✅ RSS aggregator functional
+- ✅ .env configuration active
+- ✅ Error retry logic functional
+- ⏳ Hermes content generation (fallback mode - JSON parsing needs work)
+- ⏳ Voice synthesis in progress
 
-**Test Result:**
-```
-hermes-vault-sync test:
-[2026-09-01 21:58:11] Started
-[2026-09-01 21:58:13] Already up to date (no new changes)
-[2026-09-01 21:58:13] Completed
-✓ PASS
-```
+**Next Issues to Fix:**
+1. Hermes → JSON output parsing (reasoning output interferes)
+2. Render pipeline integration (call remotion render)
+3. YouTube upload auth (token.json validation)
+4. Monitor long-running tasks
 
-**Next:** Ready for daily operation. Vault is now:
-- Persistent (local + GitHub backup)
-- Synced (automatic)
-- Portable (clone from GitHub anywhere)
+**Estimated Time:**
+- Voice synthesis: 2-5 min
+- Render: 5-10 min (depends on composition complexity)
+- Upload: 3-5 min
 
----
-**Duration:** ~15 min
-**Status:** ✅ DONE - GitHub integration complete
-
-## Session: OpenMontage Cleanup - 2026-09-01 22:00
-
-**Action:** Deleted /data/OpenMontage directory
-
-**Details:**
-- Size: 918 MB
-- Reason: No longer needed
-- Space freed: 918 MB (now /data at 1% usage)
-
-**Status:** ✅ DONE
-
-## Session: Switch Gemini to Hermes (Systemsana) - 2026-09-01 22:30
-
-**Change:** Autopilot now asks Hermes (me) for content instead of calling Gemini API
-
-**Files Created:**
-- hermes_writer.js — Calls `hermes chat` with news + prompt
-- Updated autopilot_v2.js — Uses generateContentWithHermes()
-
-**Flow:**
-1. Autopilot finds news article
-2. Asks Hermes: "Write 45-60s script for this news"
-3. Hermes reads vault (About, Projects, voice style)
-4. Returns JSON (headline, hook, bullets, full script)
-5. Autopilot uses for Remotion render + YouTube
-
-**Advantages:**
-✓ Uses vault context (better content)
-✓ No API calls to Gemini (free)
-✓ Learns from vault (improves over time)
-✓ Turkish-optimized (my style)
-
-**Status:** Ready to test
+Run started: 2026-09-01 19:19 UTC
