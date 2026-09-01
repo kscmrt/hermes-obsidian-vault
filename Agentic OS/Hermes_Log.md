@@ -54,3 +54,26 @@ hermes-vault-sync test:
 - Space freed: 918 MB (now /data at 1% usage)
 
 **Status:** ✅ DONE
+
+## Session: Switch Gemini to Hermes (Systemsana) - 2026-09-01 22:30
+
+**Change:** Autopilot now asks Hermes (me) for content instead of calling Gemini API
+
+**Files Created:**
+- hermes_writer.js — Calls `hermes chat` with news + prompt
+- Updated autopilot_v2.js — Uses generateContentWithHermes()
+
+**Flow:**
+1. Autopilot finds news article
+2. Asks Hermes: "Write 45-60s script for this news"
+3. Hermes reads vault (About, Projects, voice style)
+4. Returns JSON (headline, hook, bullets, full script)
+5. Autopilot uses for Remotion render + YouTube
+
+**Advantages:**
+✓ Uses vault context (better content)
+✓ No API calls to Gemini (free)
+✓ Learns from vault (improves over time)
+✓ Turkish-optimized (my style)
+
+**Status:** Ready to test
