@@ -43,3 +43,14 @@ hermes-vault-sync test:
 ---
 **Duration:** ~15 min
 **Status:** ✅ DONE - GitHub integration complete
+
+## Session: OpenMontage Cleanup - 2026-09-01 22:00
+
+**Action:** Deleted /data/OpenMontage directory
+
+**Details:**
+- Size: 918 MB
+- Reason: No longer needed
+- Space freed: 918 MB (now /data at 1% usage)
+
+**Status:** ✅ DONE
