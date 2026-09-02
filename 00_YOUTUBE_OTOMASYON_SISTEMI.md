@@ -52,7 +52,8 @@ Tüm kanalları tek bir ekrandan canlı izlemek, manuel video tetiklemek, kuyruk
 
 - **Katalog Konumu**: `/home/kscmrt/.hermes/external-repos/awesome-hermes-skills/`
 - **Özel Yetenek**: `awesome-hermes-skills`
-- **Kullanım**: 350+ hazır topluluk yeteneği (YouTube araçları, hafıza motorları, otomasyonlar vb.) yerel katalogdan taranabilir ve `hermes skills install <yol>` ile sisteme kurulabilir.
+- **Yüklü Yetenek Durumu**: 117 Aktif Yetenek (DevOps, Docker, MLOps, Axolotl, Chroma, Baoyu İllüstrasyon, Finans Modelleri, Code-Wiki, vb.)
+- **Kullanım**: 350+ hazır topluluk yeteneği yerel katalogdan taranabilir ve ihtiyaç duyulduğunda `hermes skills install <yol>` ile sisteme anında dahil edilebilir.
 
 ---
 
