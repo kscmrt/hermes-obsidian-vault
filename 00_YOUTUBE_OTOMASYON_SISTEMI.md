@@ -57,6 +57,17 @@ Tüm kanalları tek bir ekrandan canlı izlemek, manuel video tetiklemek, kuyruk
 
 ---
 
+## 🎯 Otonom Viral SEO & Küçük Resim (Thumbnail) Motoru
+
+Her video render edildiğinde arka planda otomatik olarak tam bir yayın paketi oluşturulur:
+1. **A/B Test Edilebilir Viral Başlıklar**: Yüksek tıklama oranlı (CTR), emoji ve hashtag içeren 3 alternatif başlık.
+2. **Hashtag ve Açıklama Metni**: YouTube Shorts algoritmasına uyumlu zengin açıklama ve zaman damgaları.
+3. **15-20 Arama Etiketi (Tags)**: Nişe özel yüksek hacimli arama anahtar kelimeleri.
+4. **Sabitlenecek İlk Yorum (Pinned Comment)**: İzleyiciden yorum ve abone toplayan etkileşim botu mesajı.
+5. **Dikey Küçük Resim (Cover)**: 1080x1920 yüksek kontrastlı kapak karesi (`thumbnail.jpg`).
+
+---
+
 ## 🚀 Yönetim ve Kontrol Komutları
 
 ```bash
