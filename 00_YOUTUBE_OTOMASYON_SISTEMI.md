@@ -48,6 +48,14 @@ Tüm kanalları tek bir ekrandan canlı izlemek, manuel video tetiklemek, kuyruk
 
 ---
 
+## 📚 Ekosistem ve Topluluk Yetenekleri (Awesome Hermes Skills)
+
+- **Katalog Konumu**: `/home/kscmrt/.hermes/external-repos/awesome-hermes-skills/`
+- **Özel Yetenek**: `awesome-hermes-skills`
+- **Kullanım**: 350+ hazır topluluk yeteneği (YouTube araçları, hafıza motorları, otomasyonlar vb.) yerel katalogdan taranabilir ve `hermes skills install <yol>` ile sisteme kurulabilir.
+
+---
+
 ## 🚀 Yönetim ve Kontrol Komutları
 
 ```bash
