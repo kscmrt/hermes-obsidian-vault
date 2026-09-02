@@ -1,23 +1,50 @@
-## 🚀 7/24 Otonom Üretim Servisi (PM2)
-Sistem tamamen sıfır maliyetli ve otonom olarak arka planda çalışmaktadır.
-- **Master Script**: `/home/kscmrt/remotion-video/autopilot_master.js`
-- **PM2 Süreç Adı**: `shorts-autopilot`
-- **Yayın Saatleri**: Günde 3 video (09:00, 13:00, 18:30)
-- **Özellikler**:
-  1. Çoklu RSS (TRT, NTV, AA vb.) + `seen_news.json` ile mükerrer haber engelleme.
-  2. Viral 4 aşamalı senaryo + Pinned Comment (Sabit yorum) üretimi.
-  3. Pexels API ile sahneye özel dikey HD MP4 B-Roll indirme.
-  4. Edge-TTS Türkçe Spiker + Ses kurgusu (Müzik ducking + SFX).
-  5. Remotion Full HD 1080x1920 dikey render (Hormozi karaoke altyazı, cam bilgi kartları).
-  6. Otomatik disk temizliği (Eski geçici dosyaların ve eski renderların silinmesi).
+# YouTube Shorts 3 Kanallı Otonom Üretim Sistemi (Isolated 7/24)
+
+Bu sistem, 3 farklı nişteki YouTube kanalını birbirinden tamamen bağımsız ve izole olarak 7/24 yöneten otonom Remotion render ve yayın mimarisidir.
 
 ---
 
-# YouTube Otomasyon Sistemi
+## 📺 Kanal Mimarisi ve İzolasyon
 
-Bu dosya Hermes'in kalici hafizasinin (Obsidian Vault) ilk dosyasidir.
+| Kanal | Konsept & Niş | Dizin | PM2 Süreci | Spiker | Günlük Yayın Saatleri |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **1. Kanal** | **Gündem & Son Dakika Haber** | `/home/kscmrt/remotion-video/channels/channel1-haber/` | `channel1-haber` | `tr-TR-AhmetNeural` | 09:00, 13:00, 18:30 |
+| **2. Kanal** | **Beyaz Eşya & Kombi Arıza Rehberi** | `/home/kscmrt/remotion-video/channels/channel2-ariza/` | `channel2-ariza` | `tr-TR-EmelNeural` | 10:30, 15:30 |
+| **3. Kanal** | **Otomobil Arıza & Gösterge İkazları** | `/home/kscmrt/remotion-video/channels/channel3-oto/` | `channel3-oto` | `tr-TR-AhmetNeural` | 11:30, 17:00, 20:30 |
 
-## Mevcut Altyapi
-- Video uretim kodlari /home/kscmrt/remotion-video/ klasorunun icindedir.
-- 2. Kanal uretim (evergreen) islemleri genellikle /home/kscmrt/remotion-video/autopilot/ klasorundeki autopilot_runner.js scripti ile tetiklenir.
-- Yeni komutlar veya surecler ogrendikce, bu klasore yeni .md dosyalari ekleyerek veya bu dosyayi guncelleyerek hafizani taze tut.
+---
+
+## 🛠️ Her Kanalın İzole Yapısı
+Her kanal klasörü kendi bağımsız bileşenlerine sahiptir:
+- `engine.js` : Otonom döngü, RSS/Kuyruk yönetimi, Pexels B-roll indirme, TTS ve Remotion render tetikleyici.
+- `queue.json` / `seen_news.json` : Kanala özel mükerrer kontrolü ve içerik kuyruğu.
+- `output/` : Kanala ait üretilmiş MP4 videolar ve props kayıtları.
+- `token.json` : Kanala özel bağımsız YouTube OAuth yetkilendirmesi.
+
+---
+
+## ⚡ Video Tasarım & Kalite Standartları
+- **Dikey Format**: 1080x1920 (9:16) Full HD, 30 FPS.
+- **Dinamik B-Roll**: Konuya uygun hareketli Pexels MP4 video katmanları.
+- **Hormozi Karaoke Altyazı**: Kelime bazlı, sarı/yeşil vurgulu modern altyazı animasyonu.
+- **Görsel Katmanlar**: TV yayın standardında canlı başlık bantları, dinamik istatistik kartları ve sayaçlar.
+- **Ses Tasarımı**: Doğal Edge-TTS yapay zeka spikeri, arka plan tematik müziği (audio ducking ile kısık seviye) ve Whoosh geçiş efektleri.
+
+---
+
+## 🚀 Yönetim ve Kontrol Komutları
+
+```bash
+# Tüm botların durumunu inceleme
+pm2 list
+
+# Belirli bir kanalın canlı loglarını izleme
+pm2 logs channel1-haber
+pm2 logs channel2-ariza
+pm2 logs channel3-oto
+
+# Tek seferlik manuel tetikleme
+node /home/kscmrt/remotion-video/channels/channel1-haber/engine.js
+node /home/kscmrt/remotion-video/channels/channel2-ariza/engine.js
+node /home/kscmrt/remotion-video/channels/channel3-oto/engine.js
+```
