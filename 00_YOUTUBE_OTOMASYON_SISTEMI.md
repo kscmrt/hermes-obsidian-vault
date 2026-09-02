@@ -32,6 +32,22 @@ Her kanal klasörü kendi bağımsız bileşenlerine sahiptir:
 
 ---
 
+## 🌐 Web Yönetim Kontrol Paneli (Dashboard)
+
+Tüm kanalları tek bir ekrandan canlı izlemek, manuel video tetiklemek, kuyruk yönetmek ve üretilen videoları tarayıcıdan izlemek için merkezi web arayüzü yayındadır:
+- **Yerel Ağ**: `http://192.168.1.160:8080`
+- **Tailscale / Uzak Erişim**: `http://100.81.238.46:8080`
+- **PM2 Süreç Adı**: `shorts-dashboard` (Port: 8080)
+
+### Panel Yetenekleri
+1. **Canlı İzleme**: 3 kanalın CPU, RAM, Uptime ve render durumları gerçek zamanlı izlenir.
+2. **Tek Tıkla Üret**: "Şimdi Üret" butonuyla anında video render döngüsü başlatılabilir.
+3. **Kuyruk Yönetimi**: 2. ve 3. kanallar için doğrudan arayüzden yeni arıza kodu/içerik eklenebilir.
+4. **Dahili Video Player**: Üretilen 1080x1920 dikey Shorts videoları tarayıcıdan sesli oynatılabilir ve indirilebilir.
+5. **Canlı Loglar**: Her kanalın konsol çıktıları popup terminal ekranında canlı akar.
+
+---
+
 ## 🚀 Yönetim ve Kontrol Komutları
 
 ```bash
