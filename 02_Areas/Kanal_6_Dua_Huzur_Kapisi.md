@@ -5,7 +5,7 @@ category: YouTube Automation
 status: Active
 ---
 
-# 🤲 Kanal 6: Huzur Kapısı (Kalbe Şifa Dualar)
+# 🤲 Kanal 6: Dua Penceresi (@duapenceresi) (Kalbe Şifa Dualar)
 
 Türk halkının manevi bağ kurduğu, yüksek etkileşimli (Âmin yorumları, WhatsApp aile paylaşımları ve kaydetme) dua ve niyaz kanalı.
 
