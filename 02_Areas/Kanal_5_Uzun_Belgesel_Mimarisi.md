@@ -29,3 +29,8 @@ Her uzun belgesel için otomatik oluşturulan dosyalar:
 - `thumbnail.jpg` (1920x1080 Yüksek Kontrastlı Kapak)
 - `metadata.json` (3 Alternatif Başlık, Zaman Damgalı Açıklama, Etiketler, Sabit Yorum)
 - `Project_MKUltra_Full_Documentary_1080p.mp4` (Bitmiş Master Video)
+
+### 📌 Canlı Yayınlanan 16:9 Belgeseller
+- **Dossier #MK-1953 (5.23 dk):** *Project MKUltra: The Declassified CIA Mind Control Experiments (Full Documentary)*
+  - 🔗 YouTube Linki: https://www.youtube.com/watch?v=VIkSN5k3wp0
+  - 📁 Yerel Çıktı: `/data/video_outputs/channel5-dark-science/long_form/Project_MKUltra_Full_Documentary_1080p.mp4`
