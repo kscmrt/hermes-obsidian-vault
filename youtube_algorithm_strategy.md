@@ -1,19 +1,23 @@
-# YouTube Öneri Algoritması & Büyüme Stratejisi (2026)
+# YouTube Algoritma & Viral Retention Stratejisi (2026 Güncel)
 
-### 1. YouTube Shorts Temel Metrikleri
-- **Viewed vs Swiped Away:** Hedef minimum **%75 - %80+ Viewed**. İlk 1-2 saniyede görsel hareket veya doğrudan merak kancası şart.
-- **Kitle Tutma Oranı (APV - Average Percentage Viewed):** 30 saniyelik Shorts için hedef **%100 - %120+**. Doğal loop (başa sarma) yapısı.
-- **Oturum Süresi (Session Time):** İzleyicinin videodan sonra kanalda/platformda kalması ve yorumlara girmesi.
+## 1. Algoritma Test Aşaması (Sampling) & 1.000 İzlenme Eşiği
+- YouTube her yeni videoyu ilk önce 1.000–3.000 kişilik bir test kitlesine (sampling audience) sunar.
+- İlk test kitlesinde **Viewed vs. Swiped Away oranı %75–80'in altındaysa** veya ortalama izlenme süresi (retention) %80'in altındaysa öneri akışı bıçak gibi kesilir.
 
-### 2. Uzun Format (16:9) Dinamikleri
-- **CTR (Tıklama Oranı):** Hedef **%6 - %10+**. Başlık ile Thumbnail arasında Curiosity Gap (Merak Boşluğu).
-- **AVD (Ortalama İzleme Süresi):** İlk 30-45 saniyedeki drop-off'u önlemek için jenerik/selamlama olmadan doğrudan konuya giriş.
+## 2. Sıfır Halüsinasyon & Gerçeklik Kuralı (Strict Grounding)
+- Teknik, hukuki ve güncel konularda (Haber, Arıza Kodu, Oto OBD2, Tüketici Kanunları) LLM spekülasyonu yasaktır.
+- Yalnızca doğrulanmış ve kanıtlanmış çözümler/maddeler verilir.
 
-### 3. Yorumlar & AI Etkileşimi
-- **Sabitlenen Yorum (Pinned Comment):** Tartışma başlatan veya soru soran sabit yorum (yorum paneli açıkken arka planda video izleme süresini katlar).
-- **AI Yorum Botu:** Hızlı ve samimi yanıtlarla geri dönüş ve abone olma oranını %40 artırma.
+## 3. İlk 1.5 Saniye Kancası (Hook)
+- "Merhaba", "Bugün sizlere", "Dostlar" gibi tüm selamlama ve dolgu kelimeler yasaktır.
+- İlk 1.5 saniyede doğrudan kayıp/kazanç uyarısı veya şok merak sorusu patlatılır.
 
-### 4. 6 Kanal Optimizasyon Kuralları
-- **Hook (0-2s):** İlk karede jeneriksiz, soru / görsel uyarı / kanca.
-- **Ses & Altyazı:** Altın bölge (Y: %45-%70), kinetic karaoke.
-- **Yorum & Sabit Mesaj:** Otomatik sabitlenen soru yorumu + AI Yorum Botu.
+## 4. Kusursuz Sonsuz Döngü (Seamless Infinite Loop)
+- Sahne 4'ün son kelimeleri ("...engellemenin tek yolu", "...dikkat etmen gereken ilk şey") ilk sahnenin başlangıç cümlesiyle birleşik bir cümle gibi bağlanır.
+- İzleyici videonun bittiğini fark etmeden 2. tura geçer (%120+ retention sinyali).
+
+## 5. B-Roll Görsel Uyumu (Physical Object Matching)
+- Stok video/fotoğraf aramalarında soyut kavramlar veya kodlar (P0420, F28) değil; doğrudan **fiziksel nesne ve eylem** İngilizce olarak aratılır (Örn: *mechanic inspecting exhaust catalytic converter*, *boiler pressure gauge valve*, *person signing refund document*).
+
+## 6. Tartışma & Yorum Tetikleyici (Pinned Comment CTA)
+- Her videonun sabitlenen yorumunda izleyicileri ikiye bölecek veya deneyimini yazdıracak net bir soru sorulur.

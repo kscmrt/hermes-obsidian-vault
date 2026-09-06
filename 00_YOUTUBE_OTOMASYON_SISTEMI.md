@@ -1,86 +1,25 @@
-# YouTube Shorts 3 Kanallı Otonom Üretim Sistemi (Isolated 7/24)
+# YouTube Otonom Video Üretim Sistemi (Shorts + 16:9 Uzun Belgesel)
 
-Bu sistem, 3 farklı nişteki YouTube kanalını birbirinden tamamen bağımsız ve izole olarak 7/24 yöneten otonom Remotion render ve yayın mimarisidir.
+## 1. Mimari Genel Bakış
+- **Shorts Üretimi (9:16)**: 9 kanal için günlük otonom Shorts akışı.
+- **Haftalık Uzun Video (16:9 Belgesel & Masterclass)**: Her kanal için haftada 1 adet 16:9 yatay derinlemesine video (5–10 dk).
+- **Zamanlayıcı Servisi**: `weekly-long-scheduler` (PM2 ID: 15).
 
----
+## 2. Haftalık Uzun Video Yayın Takvimi
+| Gün | Saat | Kanal | Konsept / Format | Ses Modeli |
+|---|---|---|---|---|
+| **Pazartesi** | 18:00 | **Kanal 1: Haber** | Haftanın En Kritik Gelişmeleri & Derin Analiz | `Fenrir` |
+| **Salı** | 18:00 | **Kanal 2: Arıza & Kombi** | Kombi ve Ev Aletleri Masterclass Arıza Rehberi | `Puck` |
+| **Çarşamba** | 18:00 | **Kanal 3: Oto & OBD2** | Otomobillerde En Sık Çıkan 5 Kritik Arıza ve Çözümü | `Charon` |
+| **Perşembe** | 18:00 | **Kanal 4: Hakkını Bil** | Vatandaşın Bilmesi Gereken 5 Gizli Tüketici Hakkı | `Aoede` |
+| **Cuma** | 10:30 | **Kanal 6: Dua Penceresi** | Cuma Özel: Kalbe Huzur ve Şifa Veren Dualar | `Aoede` |
+| **Cumartesi** | 18:00 | **Kanal 7: Kadim Kıssalar** | Tarihten Büyük Hükümdarların İbretlik Kıssası | `Charon` |
+| **Pazar** | 14:00 | **Kanal 8: Global Dua (EN)** | Peaceful Quranic Healing & Spiritual Reflections | `Charon` |
+| **Pazar** | 19:00 | **Kanal 5: Dark Science (EN)**| Declassified Secret Files & Dark Science Experiments | `Charon` |
+| **Pazar** | 21:30 | **Kanal 9: Mistik Fısıltı** | Yeni Haftada Burçları Bekleyenler & Zamansız Tarot | `Aoede` |
 
-## 📺 Kanal Mimarisi ve İzolasyon
-
-| Kanal | Konsept & Niş | Dizin | PM2 Süreci | Spiker | Günlük Yayın Saatleri |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Kanal** | **Gündem & Son Dakika Haber** | `/home/kscmrt/remotion-video/channels/channel1-haber/` | `channel1-haber` | `tr-TR-AhmetNeural` | 09:00, 13:00, 18:30 |
-| **2. Kanal** | **Beyaz Eşya & Kombi Arıza Rehberi** | `/home/kscmrt/remotion-video/channels/channel2-ariza/` | `channel2-ariza` | `tr-TR-EmelNeural` | 10:30, 15:30 |
-| **3. Kanal** | **Otomobil Arıza & Gösterge İkazları** | `/home/kscmrt/remotion-video/channels/channel3-oto/` | `channel3-oto` | `tr-TR-AhmetNeural` | 11:30, 17:00, 20:30 |
-
----
-
-## 🛠️ Her Kanalın İzole Yapısı
-Her kanal klasörü kendi bağımsız bileşenlerine sahiptir:
-- `engine.js` : Otonom döngü, RSS/Kuyruk yönetimi, Pexels B-roll indirme, TTS ve Remotion render tetikleyici.
-- `queue.json` / `seen_news.json` : Kanala özel mükerrer kontrolü ve içerik kuyruğu.
-- `output/` : Kanala ait üretilmiş MP4 videolar ve props kayıtları.
-- `token.json` : Kanala özel bağımsız YouTube OAuth yetkilendirmesi.
-
----
-
-## ⚡ Video Tasarım & Kalite Standartları
-- **Dikey Format**: 1080x1920 (9:16) Full HD, 30 FPS.
-- **Dinamik B-Roll**: Konuya uygun hareketli Pexels MP4 video katmanları.
-- **Hormozi Karaoke Altyazı**: Kelime bazlı, sarı/yeşil vurgulu modern altyazı animasyonu.
-- **Görsel Katmanlar**: TV yayın standardında canlı başlık bantları, dinamik istatistik kartları ve sayaçlar.
-- **Ses Tasarımı**: Doğal Edge-TTS yapay zeka spikeri, arka plan tematik müziği (audio ducking ile kısık seviye) ve Whoosh geçiş efektleri.
-
----
-
-## 🌐 Web Yönetim Kontrol Paneli (Dashboard)
-
-Tüm kanalları tek bir ekrandan canlı izlemek, manuel video tetiklemek, kuyruk yönetmek ve üretilen videoları tarayıcıdan izlemek için merkezi web arayüzü yayındadır:
-- **Yerel Ağ**: `http://192.168.1.160:8080`
-- **Tailscale / Uzak Erişim**: `http://100.81.238.46:8080`
-- **PM2 Süreç Adı**: `shorts-dashboard` (Port: 8080)
-
-### Panel Yetenekleri
-1. **Canlı İzleme**: 3 kanalın CPU, RAM, Uptime ve render durumları gerçek zamanlı izlenir.
-2. **Tek Tıkla Üret**: "Şimdi Üret" butonuyla anında video render döngüsü başlatılabilir.
-3. **Kuyruk Yönetimi**: 2. ve 3. kanallar için doğrudan arayüzden yeni arıza kodu/içerik eklenebilir.
-4. **Dahili Video Player**: Üretilen 1080x1920 dikey Shorts videoları tarayıcıdan sesli oynatılabilir ve indirilebilir.
-5. **Canlı Loglar**: Her kanalın konsol çıktıları popup terminal ekranında canlı akar.
-
----
-
-## 📚 Ekosistem ve Topluluk Yetenekleri (Awesome Hermes Skills)
-
-- **Katalog Konumu**: `/home/kscmrt/.hermes/external-repos/awesome-hermes-skills/`
-- **Özel Yetenek**: `awesome-hermes-skills`
-- **Yüklü Yetenek Durumu**: 117 Aktif Yetenek (DevOps, Docker, MLOps, Axolotl, Chroma, Baoyu İllüstrasyon, Finans Modelleri, Code-Wiki, vb.)
-- **Kullanım**: 350+ hazır topluluk yeteneği yerel katalogdan taranabilir ve ihtiyaç duyulduğunda `hermes skills install <yol>` ile sisteme anında dahil edilebilir.
-
----
-
-## 🎯 Otonom Viral SEO & Küçük Resim (Thumbnail) Motoru
-
-Her video render edildiğinde arka planda otomatik olarak tam bir yayın paketi oluşturulur:
-1. **A/B Test Edilebilir Viral Başlıklar**: Yüksek tıklama oranlı (CTR), emoji ve hashtag içeren 3 alternatif başlık.
-2. **Hashtag ve Açıklama Metni**: YouTube Shorts algoritmasına uyumlu zengin açıklama ve zaman damgaları.
-3. **15-20 Arama Etiketi (Tags)**: Nişe özel yüksek hacimli arama anahtar kelimeleri.
-4. **Sabitlenecek İlk Yorum (Pinned Comment)**: İzleyiciden yorum ve abone toplayan etkileşim botu mesajı.
-5. **Dikey Küçük Resim (Cover)**: 1080x1920 yüksek kontrastlı kapak karesi (`thumbnail.jpg`).
-
----
-
-## 🚀 Yönetim ve Kontrol Komutları
-
-```bash
-# Tüm botların durumunu inceleme
-pm2 list
-
-# Belirli bir kanalın canlı loglarını izleme
-pm2 logs channel1-haber
-pm2 logs channel2-ariza
-pm2 logs channel3-oto
-
-# Tek seferlik manuel tetikleme
-node /home/kscmrt/remotion-video/channels/channel1-haber/engine.js
-node /home/kscmrt/remotion-video/channels/channel2-ariza/engine.js
-node /home/kscmrt/remotion-video/channels/channel3-oto/engine.js
-```
+## 3. Sunucu Koruma & Güvenlik İlkeleri
+1. **Tekil Kilit Mekanizması (Mutex)**: `long_render.lock` ile aynı anda asla 2 uzun render çalışmaz; sunucu CPU/RAM taşması önlenir.
+2. **Düşük Kaynaklı Render**: Remotion `TMPDIR=/home/kscmrt/tmp`, `--concurrency=2`, `--image-format=jpeg`, `--gl=angle`.
+3. **Sıfır Halüsinasyon**: `ai_script_engine.js` `generateLongFormDocuScript` ile doğrulanmış veriler üzerinden 4 ana bölüm (Chapters) kurgusu.
+4. **16:9 Landscape B-Roll**: Pexels ve Pixabay üzerinden yatay HD materyal çekimi.
