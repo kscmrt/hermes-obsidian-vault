@@ -152,3 +152,11 @@
 - **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
 
 ---
+
+### 🛠️ [2026-09-08 11:01:54] Otonom Hata Düzeltme: `channel4-hak`
+- **Kök Neden:** Remotion render komutunda kullanılan '--gl=cpu' parametresi geçersizdir. Remotion, CPU tabanlı render için 'swiftshader' değerini kabul etmektedir.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** Remotion'ın GL backend seçenekleri arasında 'cpu' bulunmamaktadır. Hata logunda belirtilen 'Accepted values: swangle, angle, egl, swiftshader, vulkan, angle-egl' listesine uygun olarak, CPU kullanımı için en stabil seçenek olan 'swiftshader' parametresi ile güncellenmiştir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
