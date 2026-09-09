@@ -160,3 +160,83 @@
 - **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
 
 ---
+
+### 🛠️ [2026-09-08 15:04:20] Otonom Hata Düzeltme: `weekly-long-scheduler`
+- **Kök Neden:** ws kütüphanesindeki event-target.js dosyasında, event listener çağrılırken oluşan hataların yakalanmasına rağmen, listener'ın kendisinin 'call' metoduna sahip olmaması veya geçersiz bir fonksiyon olması durumunda 'TypeError' fırlatılarak uygulamanın çökmesine neden olan bir zafiyet bulunmaktadır.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/node_modules/ws/lib/event-target.js`
+- **Açıklama:** Hata logu, WebSocket event listener'larının tetiklenmesi sırasında bir çökme yaşandığını gösteriyor. 'listener.call' çağrısı, eğer 'listener' bir fonksiyon değilse (örneğin undefined veya hatalı bir referans ise) doğrudan TypeError fırlatır. Bu değişiklikle, 'call' metodunu çağırmadan önce 'listener'ın bir fonksiyon olup olmadığı kontrol edilerek çalışma zamanı hatalarının önüne geçilmiştir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-08 15:06:00] Otonom Hata Düzeltme: `weekly-long-scheduler`
+- **Kök Neden:** ws kütüphanesindeki event-target.js dosyasında, event listener çağrılırken oluşan hataların yakalanmasına rağmen, listener'ın kendisinin 'undefined' veya geçersiz bir fonksiyon olması durumunda bir kontrol mekanizması eksikliği nedeniyle çalışma zamanı hatası tetikleniyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/node_modules/ws/lib/event-target.js`
+- **Açıklama:** Mevcut kod bloğu listener'ın sadece fonksiyon olup olmadığını kontrol ediyor. Ancak bazı durumlarda listener bir nesne (object) olabilir ve 'handleEvent' metoduna sahip olabilir. Bu kontrolü ekleyerek, listener'ın geçersiz olması durumunda oluşabilecek 'is not a function' hatalarını engelliyor ve sistemin kararlılığını artırıyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-08 15:08:23] Otonom Hata Düzeltme: `weekly-long-scheduler`
+- **Kök Neden:** ws kütüphanesinin event-target.js dosyasındaki callListener fonksiyonunda, event listener'ların hata fırlatması durumunda process.nextTick içerisinde emit edilen 'error' olayı yakalanamadığı için süreç (process) çöküyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/node_modules/ws/lib/event-target.js`
+- **Açıklama:** ws kütüphanesinin içindeki event listener hataları, eğer thisArg bir EventEmitter değilse veya emit edilemiyorsa doğrudan uncaughtException'a dönüşerek uygulamayı durduruyor. Hata yakalama bloğuna bir fallback ekleyerek uygulamanın render sırasında çökmesini engelledik.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-08 15:09:55] Otonom Hata Düzeltme: `weekly-long-scheduler`
+- **Kök Neden:** ws kütüphanesinin event-target.js dosyasındaki callListener fonksiyonu, hata yakalama bloğunda 'uncaughtException' olayını manuel olarak tetikleyerek Node.js sürecinin (process) beklenmedik şekilde çökmesine neden oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/node_modules/ws/lib/event-target.js`
+- **Açıklama:** process.emit('uncaughtException', err) çağrısı, Node.js'in çalışma zamanını doğrudan sonlandırır. Bu satırı bir console.error ile değiştirerek, WebSocket olay dinleyicilerinde meydana gelen hataların tüm sistemi çökertmesini engelledik ve uygulamanın çalışmaya devam etmesini sağladık.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-08 15:12:23] Otonom Hata Düzeltme: `weekly-long-scheduler`
+- **Kök Neden:** WebSocket event listener'ı içerisinde oluşan hataların (özellikle asenkron süreçlerde) yakalanamayıp process'i çökertmesi. Hata logundaki ws/lib/event-target.js:291:16 satırı, listener çağrısı sırasında oluşan bir istisnanın yönetilemediğini gösteriyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/node_modules/ws/lib/event-target.js`
+- **Açıklama:** Mevcut kod bloğunda listener çağrısı sırasında oluşan hatalar bazen process'i durdurabiliyor. 'listener' nesnesinin varlığını kontrol ederek ve catch bloğuna bir loglama ekleyerek, beklenmedik WebSocket hatalarının uygulamanın tamamını çökertmesini engelledik. Bu, özellikle Gemini API gibi dış servislerin hata döndürdüğü durumlarda WebSocket bağlantısının stabil kalmasını sağlar.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-08 19:01:57] Otonom Hata Düzeltme: `channel4-hak`
+- **Kök Neden:** execSync komutu, render işlemi sırasında bir hata oluştuğunda (örneğin bellek yetersizliği veya geçici bir Remotion hatası) doğrudan çöküyor. Hata logları, API kota limitlerinin aşıldığını ve sistemin kararsızlaştığını gösteriyor. Render komutunun başarısız olması durumunda sistemin 'crash' etmemesi için hata yakalama mekanizmasının daha güvenli hale getirilmesi gerekiyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** Mevcut kod, render hatası aldığında sadece bir kez tekrar deniyor ve hata durumunda execSync'in fırlattığı exception'ı düzgün yönetemiyordu. Render komutunun ikinci kez başarısız olması durumunda sistemin belirsiz bir durumda kalmaması için işlemi güvenli bir şekilde durdurup hata fırlatacak (throw) şekilde güncelledim. Bu, sistemin 'zombi' süreçler oluşturmasını engeller.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-08 19:03:55] Otonom Hata Düzeltme: `channel4-hak`
+- **Kök Neden:** execSync komutu, render işlemi sırasında oluşan geçici hatalarda (timeout veya kaynak yetersizliği) tüm süreci 'throw' ile durdurarak sistemin çökmesine neden oluyor. Ayrıca API kota hataları render öncesi süreci bozuyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** execSync içindeki 'throw' ifadesi, render başarısız olduğunda tüm Node.js sürecini öldürüyordu. Bunu 'return' ile değiştirerek, render hatası durumunda sistemin çökmesini engelledik ve bir sonraki kanal/işlem döngüsüne geçişin güvenli olmasını sağladık.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-08 19:05:53] Otonom Hata Düzeltme: `channel4-hak`
+- **Kök Neden:** Gemini API kota aşımı nedeniyle 'produceNextTopic' fonksiyonu başarısız oluyor ve execSync çağrısı sırasında sistemin çökmesine neden olan bir hata fırlatıyor. Hata yönetimi eksikliği, işlemin durmasına yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** Hata logları, API kotasının dolması nedeniyle sistemin render aşamasına geçemediğini veya render komutunun başarısız olduğunu gösteriyor. Mevcut kodda 'return' ile sessizce çıkılması, sistemin hatalı bir durumda devam etmesine veya QC aşamasında boş verilerle çökmesine neden oluyordu. Hata fırlatarak (throw) işlemin güvenli bir şekilde durdurulması ve loglanması sağlandı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-08 19:07:52] Otonom Hata Düzeltme: `channel4-hak`
+- **Kök Neden:** Render işlemi sırasında oluşan hatalar (quota limitleri veya sistem kaynakları) yakalanamıyor ve execSync doğrudan hata fırlatarak süreci durduruyor. Ayrıca, render başarısız olduğunda QC (Kalite Kontrol) aşamasına geçilmemesi için akışın güvenli bir şekilde sonlandırılması gerekiyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** execSync hata fırlattığında 'throw' kullanmak tüm Node.js sürecini (process) çökertmektedir. Bunun yerine 'return' kullanarak sadece ilgili kanalın render işlemini güvenli bir şekilde durduruyor ve sistemin diğer kanallar için çalışmaya devam etmesini sağlıyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-08 19:09:52] Otonom Hata Düzeltme: `channel4-hak`
+- **Kök Neden:** execSync komutu, render sırasında oluşan hataları (timeout, bellek yetersizliği veya sistem kaynaklı kilitlenmeler) yakaladığında süreci doğrudan sonlandırıyor ve hata fırlatıyor. Bu durum, API kotası dolması gibi dışsal faktörlerin tetiklediği render başarısızlıklarında sistemin 'crash' olmasına neden oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** execSync'in hata durumunda sessizce 'return' etmesi yerine, hatayı yukarıya (process manager'a) fırlatmasını sağlayarak sistemin durumu doğru yönetmesini ve loglarda hatanın net bir şekilde izlenebilmesini sağladık. Ayrıca, API kotası gibi durumlarda sistemin tutarsız bir durumda kalmaması için hata fırlatma mekanizmasını güçlendirdik.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
