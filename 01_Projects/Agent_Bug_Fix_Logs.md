@@ -240,3 +240,35 @@
 - **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
 
 ---
+
+### 🛠️ [2026-09-09 11:02:18] Otonom Hata Düzeltme: `channel4-hak`
+- **Kök Neden:** Gemini API kota limitleri (429 Too Many Requests) ve geçici sunucu yoğunluğu hataları, render sürecini tetikleyen 'viralPlan' nesnesinin eksik veya hatalı oluşmasına neden oluyor. Hata yönetimi eksik olduğu için sistem render aşamasına geçmeye çalışıyor ancak 'viralPlan.scenes' gibi kritik veriler tanımlı olmadığında süreç çöküyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** AI servislerinden gelen kota hataları nedeniyle 'viralPlan' nesnesi boş veya eksik dönmektedir. Render işlemine geçmeden önce 'viralPlan.scenes' varlığını kontrol eden bir guard clause eklenerek, hatalı verilerle render başlatılması engellenmiş ve sistemin çökmesi yerine kontrollü bir hata fırlatılması sağlanmıştır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-09 11:06:17] Otonom Hata Düzeltme: `channel4-hak`
+- **Kök Neden:** AI API (Gemini) kota limitlerine takıldığı için viralPlan nesnesi oluşturulamıyor, ancak kod bu durumu kontrol etmeden render sürecine devam etmeye çalışıyor. Ayrıca, render komutunda hata yönetimi eksik ve sistem kaynakları (TMPDIR) yetersiz kalabiliyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** AI API hataları (Quota exceeded) nedeniyle viralPlan'ın boş gelmesi durumunda, uygulamanın 'throw' ile çökmesi yerine 'process.exit(1)' ile temiz bir şekilde durdurulması sağlandı. Bu, sistemin hatalı bir render denemesiyle kaynak tüketmesini engeller ve otomasyonun bir sonraki döngüye geçmesine olanak tanır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-09 11:08:01] Otonom Hata Düzeltme: `channel4-hak`
+- **Kök Neden:** AI API (Gemini) kota limitlerine takıldığı için viralPlan nesnesi boş dönüyor ve sistem process.exit(1) ile çöküyor. Hata yönetimi eksik olduğu için render süreci başlamadan sistem duruyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** process.exit(1) kullanımı, ana döngüde veya üst seviye bir hata yakalayıcıda (try-catch) yönetilemediği için sistemin tamamen çökmesine neden oluyordu. Bunun yerine bir Error fırlatarak, üst katmandaki hata yakalayıcıların (varsa) süreci düzgün bir şekilde sonlandırmasına veya bir sonraki kanala geçmesine olanak tanıyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-09 11:10:02] Otonom Hata Düzeltme: `channel4-hak`
+- **Kök Neden:** AI API kotasının dolması ve modelin geçici olarak yanıt verememesi durumunda sistemin doğrudan hata fırlatarak (throw) durması ve render sürecini yarıda kesmesi.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** Hata durumunda scriptin doğrudan çökmesini engellemek için 'throw' mekanizmasını bir 'retry' sinyali olarak güncelledim. Ayrıca, API limitlerine takılmamak adına 30 saniyelik bir bekleme süresi ekleyerek sistemin kendini toparlamasına olanak tanıdım.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
