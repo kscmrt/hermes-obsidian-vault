@@ -355,3 +355,10 @@ Aksi halde A4 ciktisi kirpilir. Ekran kisiti rapora sizmamali.
 
 Ayrica SVG sarmalayicisi `shrink-0` -> `shrink min-w-0` (dar ekranda daralabilsin),
 dikey kaydirici `minHeight:420px` -> `height:100% + minHeight:260px`.
+
+
+## Kritik sunucu tuzagi (525d0c0)
+- `.next/standalone` build sirasinda silinip yeniden yaratilirsa, calisan node sureci eski silinmis inode'a bagli kalir -> `.next/static` hic kopyalanmamis olur -> SITE GENELINDE tum JS/CSS chunk'lari 500 doner (tek sayfa degil). Belirti: HTML 200 ama chunk 500, sayfa bos/spinner gorunur. Fix: `fuser -k 3000/tcp` ile eski sureci oldur, `npm run start:standalone` ile yeniden baslat (statik kopyalama script icinde).
+- Kural paneli tasarim ilkesi: girdi satirlarinda Label+Input ayni `flex items-center gap-2` satirinda, ama ACIKLAMA `<p>` o satirin ICINE degil, DISINA (alt satira) konmali - aksi halde uzun aciklama metinleri sag/alt kenardan kirpilir. 8 girdi satirinda bu hata tekrarlanmisti, tek pattern ile toplu duzeltildi.
+- Kural 6 (on-acik montaj) kayma payi bosken x0=0 varsayimiyla kesin 'UYGUN DEGIL' basiyordu - artik slipEntered=false iken 'DENETLENMEDI' gosteriliyor. Ozet seridi 'Kuyu Dibi' onceden yanlis bayraga (mountDescentOk) bagliydi, dogru bayrak pitClearanceOk'a baglandi.
+- Dogrulama yontemi: AuthProvider giris duvari puppeteer'i engelliyordu; kullanicidan test giris bilgisi istenip alindi, puppeteer+gercek oturum ile DOM olculdu, vision_analyze ile ekran goruntusu (kirpilmis PNG parcalari halinde, tam boy timeout veriyor) teyit edildi.
