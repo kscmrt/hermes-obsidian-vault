@@ -3,7 +3,7 @@
 **Kaynak belge:** `HİDROLİK ASANSÖR PİSTON SEHPASI BOYU HESABI.pdf`
 **Uygulama:** `/home/kscmrt/sonproje` → `/piston-sehpa`
 **Dosyalar:** `src/app/piston-sehpa/page.tsx`, `src/components/piston-sehpa/ShaftDiagramSvg.tsx`
-**Son commit:** `82a902c` (2026-09-10)
+**Son commit:** `55db17a` (2026-09-10)
 
 ---
 
@@ -333,3 +333,25 @@ yaziyordu. Ama `clearanceTopAtIdeal` ZATEN `requiredStroke + 50` olarak tanimli
 Gercek denetim `standWindowValid` (`standWindowMin <= standWindowMax`) ile
 degistirildi, etiket "Sehpa Penceresi" yapildi.
 **Ders:** bir bayragi serit/ozet icin yeniden yazma; mevcut panel bayragini bagla.
+
+## Kompakt yerlesim (`55db17a`)
+
+| Bolge | Once | Sonra |
+|---|---|---|
+| Girdiler | `grid-cols-2` (4 adet) | tek satir: etiket `basis-[52%]` sol, alan `grow h-8` sag |
+| PDF butonlari | sag kolon, genis `px-6 py-2` | sol kolon en ust, `h-8 text-[11px]`: "Cizim (1s)" / "Rapor (3s)" |
+| Kabin konumu | semanin ALTINDA | simulasyonun EN USTUNDE |
+| Sema | `w-full h-auto` | + `max-h-[calc(100vh-13rem)]` |
+
+### Tuzak: SVG `h-auto` viewport tasmasi
+`w-full h-auto` yukseklige SINIR koymaz -- yukseklik genislikle orantili buyur,
+uzun kuyularda ekrani tasar. Cozum `max-h-[calc(100vh-13rem)]` (viewBox orani korunur).
+
+**KRITIK:** bu sinir `isPdf` iken UYGULANMAMALI:
+```
+${isPdf ? "" : "max-h-[calc(100vh-13rem)]"}
+```
+Aksi halde A4 ciktisi kirpilir. Ekran kisiti rapora sizmamali.
+
+Ayrica SVG sarmalayicisi `shrink-0` -> `shrink min-w-0` (dar ekranda daralabilsin),
+dikey kaydirici `minHeight:420px` -> `height:100% + minHeight:260px`.
