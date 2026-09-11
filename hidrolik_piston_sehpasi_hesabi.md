@@ -362,3 +362,15 @@ dikey kaydirici `minHeight:420px` -> `height:100% + minHeight:260px`.
 - Kural paneli tasarim ilkesi: girdi satirlarinda Label+Input ayni `flex items-center gap-2` satirinda, ama ACIKLAMA `<p>` o satirin ICINE degil, DISINA (alt satira) konmali - aksi halde uzun aciklama metinleri sag/alt kenardan kirpilir. 8 girdi satirinda bu hata tekrarlanmisti, tek pattern ile toplu duzeltildi.
 - Kural 6 (on-acik montaj) kayma payi bosken x0=0 varsayimiyla kesin 'UYGUN DEGIL' basiyordu - artik slipEntered=false iken 'DENETLENMEDI' gosteriliyor. Ozet seridi 'Kuyu Dibi' onceden yanlis bayraga (mountDescentOk) bagliydi, dogru bayrak pitClearanceOk'a baglandi.
 - Dogrulama yontemi: AuthProvider giris duvari puppeteer'i engelliyordu; kullanicidan test giris bilgisi istenip alindi, puppeteer+gercek oturum ile DOM olculdu, vision_analyze ile ekran goruntusu (kirpilmis PNG parcalari halinde, tam boy timeout veriyor) teyit edildi.
+
+## PDF Teknik Rapor Incelemesi (b05cf70)
+Kullanicinin paylastigi ureilmis PDF raporda 3 sorun bulundu, canli sayfa (525d0c0) ile
+senkron olmadigi tespit edildi:
+- Kural 5 rozeti raporda yanlis bayrak (mountDescentOk yerine pitClearanceOk olmali) kullaniyordu.
+- Kural 6, kayma payi bos oldugunda (valSlip=0 varsayimiyla) kesin x0 sonucu basiyordu; simdi
+  canli sayfadaki gibi "DENETLENMEDI" gosteriyor.
+- Ozet tabloda "Kayma payi: 0 mm" yaniltici degeri yerine "girilmedi" yaziyor.
+Ders: canli sayfa (/piston-sehpa formu) ve PDF rapor (data-a4 bloklari) AYRI kod bloklarinda
+render ediliyor -> bir tarafa yapilan mantik duzeltmesi otomatik digerine yansimiyor,
+her ikisi de manuel senkron edilmeli. Son commit: b05cf70.
+Git push tamam.
