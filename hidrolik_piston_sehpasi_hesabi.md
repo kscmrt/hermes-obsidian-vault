@@ -395,3 +395,12 @@ DERS: kullanicinin "bu deger hic kullanilmiyor" tespitleri genelde dogru
 cikiyor -- kod okumadan varsayim yapmadan once mutlaka grep ile TUM
 kullanim noktalarini (7+ yer olabiliyor) taramak gerekiyor, tek nokta
 duzeltip birakmak yetersiz kaliyor.
+
+## Dikey Slider Asiri Uzama Fix (0b5c785)
+Kullanici: "sag taraftaki ilerleme bari sabit degil cok asagiya uzuyor,
+onu kisalt". Kok neden: sag kumanda kolonu `self-stretch` classi ile
+yanindaki SVG semanin (860px) tam boyuna esniyordu, sema buyudukce
+slider da orantisiz uzuyordu. Fix: kolon sabit `height: 640px`'e
+baglandi, slider kendisi kolon icinde flex:1 ile esner ama artik ust
+sinir var. Puppeteer olcum: sliderColumn.h=640 (sabit). Son commit:
+0b5c785. Git push tamam.
