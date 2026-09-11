@@ -404,3 +404,29 @@ slider da orantisiz uzuyordu. Fix: kolon sabit `height: 640px`'e
 baglandi, slider kendisi kolon icinde flex:1 ile esner ama artik ust
 sinir var. Puppeteer olcum: sliderColumn.h=640 (sabit). Son commit:
 0b5c785. Git push tamam.
+
+## Sema Metinleri Buyutuldu + Tasma Duzeltmeleri (411c35e)
+Kullanici: "metinleri biraz daha okunur hale getirip buyutebilirmisin" + upload_20260911_092212_14.png.
+- Tum SVG fontSize degerleri (8/9/10/11/12) 2px buyutuldu, buyuyen metinlere gore etiket kutulari (rect) genisletildi.
+- Buyume sonrasi sag kenardaki "ALT KAT/UST KAT" etiketleri padRight=85 alana sigmiyordu -> padRight=125'e cikarildi, "· KABIN TABANI" eki kaldirildi (gereksiz tekrar).
+- Sol-alt bolgede "SABIT UC" ile "ALT BAGLANTI" simulasyon alt-kat konumunda cakisiyordu -> textAnchor end/start ile ayristirildi.
+- Dogrulama: build+restart+puppeteer screenshot+vision_analyze ile onceki/sonraki karsilastirildi, iki sorun da cozuldu teyit edildi.
+
+## PDF Rapor Yeniden Tasarimi (b9f2676)
+Kullanici: "PİSTON SEHPASİ TEKNİK RAPORU yeniden tasarla simulasyon cizimi vs pdf icerinde net olsun tum hesaplamalar ile birlikte".
+
+Kok neden tespiti: canli PDF puppeteer ile indirilip pymupdf ile sayfa sayfa PNG'ye render edildi, her sayfa vision_analyze ile incelendi.
+
+**Sayfa 2 (Tam Sayfa Sema) - kritik kesilme sorunu:**
+- ShaftDiagramSvg `isPdf=true` iken SVG'ye width/height HTML attribute VERILMIYORDU, sadece viewBox + CSS `w-full h-auto` kullaniliyordu -> SVG konteynerin GENISLIGINE gore buyuyor, konteyner `overflow-hidden` + sinirli yukseklikte oldugunda SVG ustten/alttan tasiyip kesiliyordu (getBoundingClientRect ile olculdu: svg height 960 > container height 927.5).
+- Fix: isPdf=true iken width/height attribute set edildi; page.tsx'teki render noktasinda 700x960 -> 660x900 (gercek konteyner 714x927.5'e gore guvenli marjla).
+- Ayrica padTop 38->50, padBottom 38->42: "KUYU TAVANI"/"KUYU DIBI TABANI" etiketleri viewBox kenarina cok yakindi.
+
+**Sayfa 1 (Kapak) - 2 sorun:**
+- "Rapor Icerigi" listesi "1" degil "2"den basliyordu (kapak sayfasi kendisi sayilmiyordu) -> 1: "Ozet ve girdi degerleri" eklendi.
+- Kutu `flex-1 + justify-center` ile dev bos alan birakiyordu -> sabit boyuta cekildi, altina "Hizli Denetim Ozeti" (7 kuralin K1-K7 mini kart gorunumu, ruleStatus dizisinden) eklendi, boslugu doldurdu.
+
+**Genel:** Sayfa numaralari 2/3,3/3 -> 3/4,4/4 (rapor artik 4 sayfa); buton "Rapor (3s)" -> "Rapor (4s)".
+
+**Ders (pekistirildi):** vision_analyze crop bolgesi yanlis secildiginde belirsiz cevap veriyor; asil dogrulama SVG/container boyutlarini `page.evaluate(() => el.getBoundingClientRect())` ile olcmekten geciyor - piksel kanitindan once koordinat kanitina bak.
+
