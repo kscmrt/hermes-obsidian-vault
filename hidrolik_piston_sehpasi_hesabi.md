@@ -374,3 +374,24 @@ Ders: canli sayfa (/piston-sehpa formu) ve PDF rapor (data-a4 bloklari) AYRI kod
 render ediliyor -> bir tarafa yapilan mantik duzeltmesi otomatik digerine yansimiyor,
 her ikisi de manuel senkron edilmeli. Son commit: b05cf70.
 Git push tamam.
+
+## Kasnak-Tavan Girdisi Kural 3/4'e Baglandi (c2b24ad)
+Kullanici sordu: "kasnak tavan mesafesini hic bir hesapta kullanmiyorsun,
+ikinci gorselde sabit almissin". Dogru tespitti. Kural 3'un ideal sehpa boyu
+formulunde (S = K - h - 50) ve turevlerinde (Kural 4 tepedeKol, mevcut sehpa
+denetimi, montaj tavan kontrolu, 300cm son kat senaryosu, PDF rapor
+formulleri) belge sabiti 50mm hardcode'lanmisti; "Kasnak-Tavan (mm)" girdisi
+(varsayilan 50, ayni deger) SADECE Kural 7'de (piston acikken tepe kontrolu)
+kullaniliyordu. Kullanici bu girdiyi degistirdiginde ideal boy hic
+etkilenmiyordu -- kullanici karar: "sabit 50mm SILINSIN, benim girdigim
+deger kullanilsin".
+Fix: 7 hesap noktasi (idealStandHeight, clearanceTopAtIdeal, ropeLegAtTop,
+rule4RightSide, actualTopOk, mountCeilingOk, cappedIdeal) + goruntu
+metinleri + PDF rapor formulleri valPulleyCeilGap'e baglandi.
+Puppeteer canli dogrulama: Kasnak-Tavan 50->100mm -> ideal boy 3120->3070mm
+(tam -50 fark, dogru). Son commit: c2b24ad. Git push tamam.
+
+DERS: kullanicinin "bu deger hic kullanilmiyor" tespitleri genelde dogru
+cikiyor -- kod okumadan varsayim yapmadan once mutlaka grep ile TUM
+kullanim noktalarini (7+ yer olabiliyor) taramak gerekiyor, tek nokta
+duzeltip birakmak yetersiz kaliyor.
