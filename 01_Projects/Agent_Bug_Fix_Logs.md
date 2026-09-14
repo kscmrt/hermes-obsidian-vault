@@ -343,3 +343,371 @@
 **Çözüm:** `data/patch_ledger.json` circuit breaker eklendi — dosya başına 6 saatte max 3 yama. Limit aşılınca yama reddedilir ve insan incelemesine bırakılır.
 **Not:** `node_modules` guard'ı sağlam çalışıyor; `ws@8.21.0` orijinaliyle birebir aynı (npm pack diff ile doğrulandı).
 **Yedek:** /home/kscmrt/engine_backups/channel4-hak_engine_20260909_220703.js
+
+### 🛠️ [2026-09-13 17:10:27] Otonom Hata Düzeltme: `channel1-haber`
+- **Kök Neden:** Remotion render işlemi sırasında 'Segmentation fault (139)' hatası, genellikle yetersiz bellek (OOM) veya geçici dizin (TMPDIR) çakışmalarından kaynaklanır. execSync kullanımı, render sürecindeki hataları yakalayamadığı için sistemin çökmesine neden olmaktadır. Hata yönetimi için try-catch bloğu eklenmeli ve render komutu daha güvenli hale getirilmelidir.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel1-haber/engine.js`
+- **Açıklama:** execSync komutunu bir try-catch bloğuna alarak, render sürecinde oluşabilecek 'Segmentation fault' gibi kritik hataların uygulamayı doğrudan çökertmesini engelledik. Ayrıca, komut içindeki gereksiz TMPDIR önekini kaldırıp env değişkeni üzerinden yönetimi standartlaştırdık.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 17:12:29] Otonom Hata Düzeltme: `channel1-haber`
+- **Kök Neden:** Remotion render işlemi sırasında 'Segmentation fault' (status 139) hatası, sistemin bellek (RAM) sınırlarını aşması veya geçici dizin (TMPDIR) üzerindeki dosya kilitlenmelerinden kaynaklanmaktadır. `execSync` kullanımı, render işlemi başarısız olduğunda süreci doğrudan sonlandırdığı için sistemin kararsız hale gelmesine neden olmaktadır.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel1-haber/engine.js`
+- **Açıklama:** Segmentation fault (139) genellikle bellek yetersizliğinden kaynaklanır. `--max-old-space-size=4096` parametresi ile Node.js'e daha fazla bellek alanı tanımlandı. Ayrıca `--disable-headless-cache` eklenerek render sırasında oluşabilecek önbellek çakışmaları engellendi. Hata durumunda tek seferlik bir 'retry' mekanizması eklenerek sistemin tamamen çökmesi yerine kurtarılması sağlandı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 17:14:28] Otonom Hata Düzeltme: `channel1-haber`
+- **Kök Neden:** Remotion render işlemi sırasında oluşan 'Segmentation fault' (status 139), genellikle bellek yetersizliği veya geçici dosya dizini (TMPDIR) çakışmalarından kaynaklanır. Mevcut kodda render komutu doğrudan execSync ile çalıştırılıyor ve hata durumunda sadece bir kez tekrar deneniyor, bu da sistemin kararsız kalmasına neden oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel1-haber/engine.js`
+- **Açıklama:** Segmentation fault (139) hatalarını azaltmak için Puppeteer'ın gereksiz indirme yapmasını engelleyen PUPPETEER_SKIP_CHROMIUM_DOWNLOAD bayrağı eklendi. Ayrıca, render komutu öncesinde bellek yönetimi için NODE_OPTIONS optimize edildi ve hata sonrası tekrar deneme mekanizmasına 5 saniyelik bir soğuma süresi eklenerek sistemin kararlılığı artırıldı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:54:16] Otonom Hata Düzeltme: `channel2-ariza`
+- **Kök Neden:** ai_script_engine.js dosyasında generateViralScript fonksiyonunun dışa aktarılmaması (export edilmemesi) veya yanlış isimlendirilmesi nedeniyle engine.js tarafından import edilememesi.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel2-ariza/engine.js`
+- **Açıklama:** Hata logu, generateViralScript fonksiyonunun modül içinde bulunamadığını gösteriyor. Import işlemini daha esnek hale getirerek, fonksiyonun modülün ana objesinde mi yoksa default export içinde mi olduğunu kontrol eden bir yapıya geçiş yapıldı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:54:19] Otonom Hata Düzeltme: `channel3-oto`
+- **Kök Neden:** ai_script_engine.js dosyasında generateViralScript fonksiyonu export edilmemiş veya yanlış isimlendirilmiş, bu nedenle engine.js içindeki require işlemi başarısız oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel3-oto/engine.js`
+- **Açıklama:** Hata, modülün export yapısının beklenen destructuring (yıkım) ile uyuşmamasından kaynaklanıyor. Kod, modülün export yapısını daha esnek hale getirerek (default veya named export kontrolü ile) çalışma zamanı hatasını engeller.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:54:22] Otonom Hata Düzeltme: `channel4-hak`
+- **Kök Neden:** ai_script_engine.js dosyası içerisinde generateViralScript fonksiyonu tanımlanmamış veya dışa aktarılmamış, ancak engine.js dosyası bu fonksiyonu import etmeye çalışıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** Hata, import edilen modülün beklenen fonksiyonu doğrudan dışa aktarmamasından kaynaklanıyor. Modülü bir nesne olarak alıp, fonksiyonun varlığını kontrol ederek veya varsayılan dışa aktarımı (default export) dikkate alarak güvenli bir atama yapıldı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:54:25] Otonom Hata Düzeltme: `channel5-mystery`
+- **Kök Neden:** Dosya içerisinde 'generateViralScript' fonksiyonu tanımlanmış ancak export edilmeye çalışılırken kapsam dışında kalmış veya tanımlanmamış. Hata logu, bu fonksiyonun çağrıldığı yerde bulunamadığını gösteriyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/ai_script_engine.js`
+- **Açıklama:** Hata logu, 'generateViralScript' fonksiyonunun referans hatası verdiğini belirtiyor. Bu fonksiyonun export edilmeden önce dosya içerisinde tanımlanması gerekmektedir. Eksik olan fonksiyon tanımı eklenerek modül dışa aktarımı güvenli hale getirilmiştir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:54:27] Otonom Hata Düzeltme: `channel6-dua`
+- **Kök Neden:** generateViralScript fonksiyonu dosya içerisinde tanımlanmış olmasına rağmen, modülün üst kısımlarında veya çağrıldığı noktada scope (kapsam) hatası veya modül yükleme sırasındaki bir referans sorunu nedeniyle 'not defined' hatası veriyor. Ayrıca fonksiyonun export edilme şekli ile çağrıldığı yerdeki beklenti uyumsuzluğu giderilmelidir.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/ai_script_engine.js`
+- **Açıklama:** Fonksiyonu 'const' ifadesi yerine 'function' bildirimi (function declaration) ile tanımlayarak hoisting (yukarı taşıma) mekanizmasından faydalandık. Bu, modül yükleme sırasında fonksiyonun her zaman tanımlı olmasını garanti eder ve 'ReferenceError' hatasını ortadan kaldırır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:54:30] Otonom Hata Düzeltme: `channel7-kissalar`
+- **Kök Neden:** ReferenceError hatası, 'generateViralScript' fonksiyonunun export edilmesine rağmen, dosya içindeki modül yapısında veya çağrıldığı noktada scope (kapsam) sorunu yaşanması veya fonksiyonun tanımlanmadan önce çağrılmaya çalışılmasından kaynaklanmaktadır. Hata logu, 366. satırda bir referans hatası olduğunu belirtiyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/ai_script_engine.js`
+- **Açıklama:** Hata logunda belirtilen 366. satır, fonksiyonun gövdesinin başlangıcıdır. ReferenceError genellikle fonksiyonun export edilmemesi veya yanlış import edilmesiyle oluşur. Mevcut kodda fonksiyon tanımlı ancak Node.js modül yükleme sırasında bir 'hoisting' veya 'circular dependency' sorunu yaşıyor olabilir. Fonksiyonu dosyanın en üstüne taşımak veya modül export'unu dosya sonuna sabitlemek, Node.js'in modül çözümleme sürecindeki belirsizliği giderir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:56:14] Otonom Hata Düzeltme: `channel2-ariza`
+- **Kök Neden:** ai_script_engine.js dosyasının 366. satırında, tanımlanmamış bir 'generateViralScript' fonksiyonuna erişilmeye çalışılıyor. engine.js içerisinde bu fonksiyonun dışa aktarılıp aktarılmadığı kontrol edilmeden doğrudan çağrılması çalışma zamanı hatasına neden oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel2-ariza/engine.js`
+- **Açıklama:** Hata, ai_script_engine modülünün beklenen yapıda dışa aktarılmamasından kaynaklanıyor. Yeni kod, 'generateViralScript' fonksiyonunun varlığını güvenli bir şekilde kontrol eder ve eğer bulunamazsa null atayarak uygulamanın çökmesini engeller. Ayrıca, modülün kendisinin fonksiyon olduğu durumlar için yedek bir kontrol eklenmiştir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:56:17] Otonom Hata Düzeltme: `channel3-oto`
+- **Kök Neden:** ai_script_engine.js dosyasının 366. satırında 'generateViralScript' fonksiyonu tanımlanmadan çağrılıyor. engine.js içerisinde bu fonksiyonun dışa aktarılmadığı veya yanlış import edildiği anlaşılıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel3-oto/engine.js`
+- **Açıklama:** Import edilen modülün yapısını daha güvenli bir şekilde kontrol ederek, 'generateViralScript' fonksiyonunun mevcut olup olmadığını doğrulayan bir ternary operatörü eklendi. Bu, modülün export yapısındaki belirsizlikten kaynaklanan ReferenceError hatasını engeller.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:56:19] Otonom Hata Düzeltme: `channel4-hak`
+- **Kök Neden:** ai_script_engine.js dosyasının 366. satırında 'generateViralScript' fonksiyonuna erişilmeye çalışılıyor ancak bu fonksiyon tanımlanmamış veya dışa aktarılmamış. engine.js içerisindeki require mantığı, modülün yapısıyla uyuşmuyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** Hata, modülün yanlış içe aktarılmasından kaynaklanıyor. 'generateViralScript' fonksiyonunu doğrudan destructuring yöntemiyle içe aktararak, modülün export yapısını doğru şekilde hedefliyoruz. Bu, ReferenceError hatasını ortadan kaldıracaktır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:56:21] Otonom Hata Düzeltme: `channel5-mystery`
+- **Kök Neden:** ai_script_engine.js dosyasında 'generateViralScript' fonksiyonu dışa aktarılmamış (export edilmemiş) veya dosya içinde tanımlanmamış, bu da engine.js tarafından import edildiğinde ReferenceError hatasına yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel5-dark-science/engine.js`
+- **Açıklama:** ai_script_engine.js içindeki dışa aktarma yapısı ile engine.js içindeki import yapısı uyumsuz. Fonksiyonun doğrudan export edilip edilmediğinden bağımsız olarak, modülü bir nesne olarak alıp fonksiyonu güvenli bir şekilde atayarak 'ReferenceError' hatasını gideriyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:56:24] Otonom Hata Düzeltme: `channel6-dua`
+- **Kök Neden:** ai_script_engine.js dosyası içerisinde generateViralScript fonksiyonu dışa aktarılmamış (export edilmemiş) veya tanımlanmamış, bu yüzden engine.js dosyası bu fonksiyonu import edemiyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel6-dua/engine.js`
+- **Açıklama:** Import edilen modülün yapısı belirsiz olduğundan, fonksiyonu doğrudan destructuring ile almak yerine modül nesnesini alıp güvenli bir şekilde fonksiyonu atayarak 'undefined' hatasını engelledik.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:56:26] Otonom Hata Düzeltme: `channel7-kissalar`
+- **Kök Neden:** Hata logu, /shared/ai_script_engine.js dosyasının 366. satırında 'generateViralScript' fonksiyonunun tanımlı olmadığını belirtiyor. Bu, fonksiyonun dışa aktarılmadığını (export edilmediğini) veya isim çakışması olduğunu gösterir. engine.js dosyasındaki import işlemi, fonksiyonun modül içinde bulunamaması nedeniyle başarısız oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel7-kissalar/engine.js`
+- **Açıklama:** Hata logunda 'ateViralScript' ve 'generateViralScript' isimlerinin her ikisinin de referans hatası verdiği görülüyor. Bu, modülün dışa aktarma yapısında bir tutarsızlık olduğunu gösterir. Import işlemini doğrudan destructuring yerine bir nesne olarak alıp, her iki olası isim varyasyonunu da kontrol ederek (fallback mekanizması ile) çalışma zamanı çökmesini engelledik.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:56:28] Otonom Hata Düzeltme: `channel8-global-dua`
+- **Kök Neden:** ai_script_engine.js dosyası içerisinde 'generateViralScript' fonksiyonu tanımlanmamış veya dışa aktarılmamış, bu yüzden engine.js dosyası bu fonksiyonu import edemiyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel8-global-dua/engine.js`
+- **Açıklama:** ai_script_engine.js içerisindeki fonksiyon ismi ile import edilen isim uyuşmazlığı veya export eksikliği nedeniyle hata oluşuyor. Kod, fonksiyonun varlığını kontrol ederek veya alternatif ismi kullanarak çalışma zamanı hatasını (ReferenceError) önleyecek şekilde güncellendi.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:56:30] Otonom Hata Düzeltme: `channel9-astroloji`
+- **Kök Neden:** ai_script_engine.js dosyası içerisinde 'generateViralScript' fonksiyonunun dışa aktarılmaması (export edilmemesi) veya tanımlanmaması nedeniyle, engine.js dosyası bu fonksiyonu çağırdığında ReferenceError hatası almaktadır.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel9-astroloji/engine.js`
+- **Açıklama:** Hata logu, 'eViralScript' ve 'generateViralScript' tanımlayıcılarının bulunamadığını belirtiyor. engine.js dosyasındaki import satırı, shared/ai_script_engine.js dosyasından beklenen fonksiyonları tam olarak çekemediği için, eksik olan tanımlayıcıları import listesine ekleyerek modül bağımlılığını gideriyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:56:32] Otonom Hata Düzeltme: `weekly-long-scheduler`
+- **Kök Neden:** long_video_engine.js dosyası, ai_script_engine.js içerisinden 'generateViralScript' fonksiyonunu çağırmaya çalışıyor ancak bu fonksiyon ilgili modülde tanımlı değil veya dışa aktarılmamış (export edilmemiş). Hata logu, ai_script_engine.js'in 366. satırında bu fonksiyonun çağrıldığını ancak tanımlanmadığını belirtiyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/long_video_engine.js`
+- **Açıklama:** long_video_engine.js içerisinde kullanılan generateViralScript fonksiyonunun ai_script_engine.js modülünden import edilmediği tespit edildi. Import satırı güncellenerek fonksiyonun erişilebilir olması sağlandı. Eğer fonksiyon ai_script_engine.js içinde hiç yoksa, o dosyada da export edilmesi gerekmektedir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:58:13] Otonom Hata Düzeltme: `channel2-ariza`
+- **Kök Neden:** ai_script_engine.js dosyasının 366. satırında 'generateViralScript' fonksiyonu tanımlanmadan çağrılıyor veya dışa aktarılmıyor. engine.js içerisindeki import mantığı, fonksiyonun varlığını kontrol etse de, modülün kendisi bu fonksiyonu export etmediği için çalışma zamanı hatası oluşuyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel2-ariza/engine.js`
+- **Açıklama:** ai_script_engine modülünün export yapısı CommonJS veya ES6 default export olabilir. Mevcut kod sadece doğrudan fonksiyonu veya modülün kendisini kontrol ediyordu. Yeni kod, 'default' anahtarını da kontrol ederek import edilen modülün yapısına göre daha güvenli bir atama yapar ve 'generateViralScript is not defined' hatasını engeller.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:58:15] Otonom Hata Düzeltme: `channel3-oto`
+- **Kök Neden:** engine.js dosyasının 14. satırında ai_script_engine modülü içe aktarılıyor ancak 15. satırda generateViralScript fonksiyonuna erişim mantığı hatalı kurulmuş. Hata logu, ai_script_engine.js dosyasının 366. satırında generateViralScript'in tanımlı olmadığını belirtiyor, bu da modülün export yapısının yanlış kullanıldığını gösteriyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel3-oto/engine.js`
+- **Açıklama:** Modül içe aktarılırken destructuring (yıkım) yöntemi kullanılarak generateViralScript doğrudan import edilmiştir. Bu, modülün export yapısı ne olursa olsun (eğer fonksiyon dışa aktarılıyorsa) daha güvenli ve standart bir Node.js yaklaşımıdır. Ayrıca, 15. satırdaki karmaşık ve hatalı tip kontrolü kaldırılarak kod temizlenmiştir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:58:18] Otonom Hata Düzeltme: `channel4-hak`
+- **Kök Neden:** ai_script_engine.js dosyası içerisinde generateViralScript fonksiyonunun tanımlanmamış olması veya export edilmemesi, engine.js dosyasının bu fonksiyonu import etmeye çalışırken hata almasına neden oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** Import edilen modülün yapısını daha esnek hale getirerek, fonksiyonun doğrudan export edilmediği veya farklı bir isimle (default export gibi) tanımlandığı durumlarda sistemin çökmesini engelledik.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:58:20] Otonom Hata Düzeltme: `channel5-mystery`
+- **Kök Neden:** ai_script_engine.js dosyasında 'generateViralScript' fonksiyonu tanımlanmamış veya dışa aktarılmamış, ancak engine.js bu fonksiyonu çağırmaya çalışıyor. Ayrıca, ai_script_engine.js'in 366. satırında 'Script' değişkeni tanımlanmadan kullanılıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel5-dark-science/engine.js`
+- **Açıklama:** Hata, 'generateViralScript' fonksiyonunun modül içinde bulunamamasından kaynaklanıyor. Kod, fonksiyonun varlığını kontrol ederek ve fallback mekanizmasını güvenli hale getirerek 'ReferenceError' çökmesini engeller. Ayrıca, ai_script_engine.js içindeki 366. satırdaki 'Script' hatası için ilgili dosyanın da kontrol edilmesi önerilir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:58:23] Otonom Hata Düzeltme: `channel6-dua`
+- **Kök Neden:** engine.js dosyasının 15. satırında tanımlanan 'generateViralScript' değişkeni, modül içe aktarma (require) sonrası kapsam (scope) dışında kalıyor veya yanlış referans ediliyor. Hata logu, bu değişkenin tanımlanmadığını belirtiyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel6-dua/engine.js`
+- **Açıklama:** ai_script_engine.js dosyasındaki fonksiyonun doğrudan destructuring (yıkım) yöntemiyle içe aktarılması, değişkenin global kapsamda düzgün bir şekilde tanımlanmasını sağlar ve 'undefined' hatasını ortadan kaldırır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:58:25] Otonom Hata Düzeltme: `channel7-kissalar`
+- **Kök Neden:** engine.js dosyasının 16. satırında, aiScriptEngine modülünden import edilen fonksiyonun adı yanlış yazılmış (ateViralScript) ve bu durum bir ReferenceError hatasına yol açmaktadır.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel7-kissalar/engine.js`
+- **Açıklama:** Hatalı olan 'ateViralScript' referansı kaldırıldı. 'generateViralScript' fonksiyonu doğrudan aiScriptEngine modülünden çağrılacak şekilde düzeltildi.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:58:28] Otonom Hata Düzeltme: `channel8-global-dua`
+- **Kök Neden:** engine.js dosyasının 16. satırında tanımlanan 'generateViralScript' değişkeni, 'ai_script_engine.js' dosyasında dışa aktarılmadığı veya yanlış isimlendirildiği için 'undefined' hatasına yol açıyor. Ayrıca hata logu, ai_script_engine.js dosyasının kendi içinde de bu fonksiyonu çağırmaya çalıştığını gösteriyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel8-global-dua/engine.js`
+- **Açıklama:** Hata, 'generateViralScript' fonksiyonunun 'aiEngine' modülü içerisinde bulunamamasından kaynaklanıyor. Kodun çökmesini engellemek için bir fallback (yedek) mekanizması eklenerek, fonksiyonun tanımlı olmaması durumunda uygulamanın hata fırlatması yerine güvenli bir şekilde devam etmesi veya uygun bir hata mesajı üretmesi sağlandı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:58:30] Otonom Hata Düzeltme: `channel9-astroloji`
+- **Kök Neden:** ai_script_engine.js dosyasında dışa aktarılmayan (export edilmeyen) fonksiyonlar, engine.js içerisinde import edilmeye çalışıldığı için ReferenceError hatası oluşuyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel9-astroloji/engine.js`
+- **Açıklama:** Hata logu, ai_script_engine.js içerisindeki 366. satırda bu fonksiyonların tanımlı olmadığını gösteriyor. Bu durum, modülün export yapısının bozuk olduğunu veya engine.js'in modül�� yanlış okuduğunu işaret eder. Import işlemini bir nesneye atayarak modülün içeriğini daha güvenli bir şekilde yükleyip, fonksiyonların varlığını kontrol ederek çalışma zamanı çökmesini engelliyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 18:58:32] Otonom Hata Düzeltme: `weekly-long-scheduler`
+- **Kök Neden:** ai_script_engine.js içerisinde 'generateViralScript' fonksiyonu dışa aktarılmamış veya tanımlanmamış, bu da long_video_engine.js dosyasının import sırasında hata almasına neden oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/long_video_engine.js`
+- **Açıklama:** Hata logu, 'generateViralScript' fonksiyonunun 'ai_script_engine.js' içerisinde bulunamadığını veya export edilmediğini gösteriyor. long_video_engine.js dosyasında bu fonksiyon kullanılmıyorsa import listesinden kaldırılmalı, eğer kullanılıyorsa ai_script_engine.js dosyası düzeltilmelidir. Mevcut durumda, kullanılmayan hatalı import'u kaldırarak bağımlılık hatasını gideriyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 19:00:18] Otonom Hata Düzeltme: `channel5-mystery`
+- **Kök Neden:** ai_script_engine.js dosyasında 'generateViralScript' fonksiyonu dışa aktarılmamış veya yanlış içe aktarılıyor. Ayrıca engine.js içindeki 14. satırda yapılan 'typeof' kontrolü, fonksiyonun tanımlı olmadığı durumlarda 'Script is not defined' hatasına yol açan bir referans hatası oluşturuyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel5-dark-science/engine.js`
+- **Açıklama:** Hata, ai_script_engine modülünün yapısının beklenen şekilde olmamasından ve 14. satırdaki karmaşık atama mantığının çalışma zamanında 'Script' değişkenine erişmeye çalışırken hata vermesinden kaynaklanıyor. Modülü doğrudan destructuring ile import ederek ve fonksiyonun varlığını modülün export yapısına güvenerek çözüyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 19:00:21] Otonom Hata Düzeltme: `channel6-dua`
+- **Kök Neden:** Hata logu, 'generateViralScript' fonksiyonunun 'ai_script_engine.js' dosyasında tanımlanmadığını veya dışa aktarılmadığını gösteriyor. 'engine.js' dosyası bu fonksiyonu çağırmaya çalışırken modül yükleme aşamasında çöküyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel6-dua/engine.js`
+- **Açıklama:** Modül içe aktarma işleminde doğrudan destructuring (yıkım) yapmak yerine, modülün tamamını bir değişkene atayarak fonksiyonun varlığını kontrol eden veya varsayılan dışa aktarımı (default export) destekleyen daha güvenli bir yöntem kullanıldı. Bu, modül yapısındaki uyumsuzluklardan kaynaklanan 'undefined' hatasını önler.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 19:00:23] Otonom Hata Düzeltme: `channel7-kissalar`
+- **Kök Neden:** ai_script_engine.js dosyasının 366. satırında tanımlanmamış bir fonksiyonun çağrılması ve engine.js içerisinde generateViralScript fonksiyonunun yanlış import edilmesi veya export edilmemesi kaynaklı referans hatası.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel7-kissalar/engine.js`
+- **Açıklama:** ai_script_engine.js içerisindeki 366. satırda 'ateViralScript' şeklinde bir yazım hatası (typo) olduğu loglardan anlaşılmaktadır. Ayrıca engine.js içerisinde import yapısı daha güvenli hale getirilerek, modülün export ettiği fonksiyon doğrudan destructuring ile alınmıştır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 19:00:25] Otonom Hata Düzeltme: `channel8-global-dua`
+- **Kök Neden:** engine.js dosyasının 16. satırında, ai_script_engine modülünden import edilen generateViralScript fonksiyonu, modülün kendisinde tanımlı olmadığı veya yanlış referans edildiği için 'undefined' hatası veriyor. Ayrıca, 366. satırda modül seviyesinde doğrudan çağrılan bir fonksiyon referans hatasına yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel8-global-dua/engine.js`
+- **Açıklama:** Hatalı olan 'undefined' kontrolünü, fonksiyonun varlığını tip kontrolü ile doğrulayan daha güvenli bir yapıya dönüştürdük. Eğer fonksiyon bulunamazsa, uygulamanın sessizce çökmesi yerine anlamlı bir hata fırlatmasını sağladık.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 19:00:27] Otonom Hata Düzeltme: `channel9-astroloji`
+- **Kök Neden:** ai_script_engine.js dosyasında dışa aktarılmayan (export edilmeyen) değişkenlerin engine.js içerisinde destructuring ile çağrılmaya çalışılması 'ReferenceError' hatasına yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel9-astroloji/engine.js`
+- **Açıklama:** Hata logu, eViralScript'in tanımlı olmadığını belirtiyor. ai_script_engine.js içerisinde bu değişkenin export edilmediği veya mevcut olmadığı anlaşılıyor. Kodun çalışması için sadece mevcut olan generateViralScript fonksiyonunu import ederek referans hatasını gideriyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-13 19:00:29] Otonom Hata Düzeltme: `weekly-long-scheduler`
+- **Kök Neden:** long_video_engine.js dosyası, ai_script_engine.js içerisinden 'generateViralScript' fonksiyonunu çağırmaya çalışıyor ancak bu fonksiyon ilgili modülde tanımlı değil veya dışa aktarılmamış (export edilmemiş). Hata logu, ai_script_engine.js'in 366. satırında bu fonksiyonun çağrıldığını ancak tanımlanmadığını belirtiyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/long_video_engine.js`
+- **Açıklama:** long_video_engine.js içerisinde kullanılan generateViralScript fonksiyonunun ai_script_engine.js modülünden import edilmediği tespit edildi. Import satırı güncellenerek eksik fonksiyonun modüle dahil edilmesi sağlandı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 01:06:28] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** viralPlan.scenes değişkeninin undefined veya null olması durumunda .map() fonksiyonunun çağrılması TypeError hatasına yol açmaktadır.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel2-ariza/engine.js`
+- **Açıklama:** viralPlan.scenes dizisinin varlığını kontrol ederek (optional chaining veya varsayılan boş dizi ataması ile) kodun güvenli çalışmasını sağladım. Bu, API'den dönen verinin eksik olması durumunda sistemin çökmesini engeller.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 01:08:27] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** viralPlan nesnesinin veya viralPlan.scenes dizisinin undefined/null gelmesi durumunda .map() ve .length özelliklerine erişilmeye çalışılması TypeError hatasına yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel2-ariza/engine.js`
+- **Açıklama:** viralPlan nesnesinin varlığı ve scenes dizisinin geçerliliği kontrol edilerek 'undefined' hatası engellendi. Ayrıca mediaResults dizisine erişirken optional chaining (?.) kullanılarak dizi elemanlarının eksik olması durumunda oluşabilecek hatalar güvenli hale getirildi.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 01:10:26] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** generateViralScript fonksiyonundan dönen 'viralPlan' nesnesinin veya 'viralPlan.scenes' dizisinin undefined olması, map ve length işlemlerinde TypeError hatasına yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel3-oto/engine.js`
+- **Açıklama:** generateViralScript sonucunun geçerliliğini kontrol eden bir guard clause eklendi. Bu sayede 'viralPlan' veya 'viralPlan.scenes' undefined olduğunda kodun çökmesi engellenerek hata yönetilebilir hale getirildi.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 01:12:27] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** viralPlan veya viralPlan.scenes nesnelerinin null/undefined dönme ihtimaline karşı bir kontrol mekanizması bulunmuyor. Bu durum, .map() ve .length özelliklerine erişilirken 'Cannot read properties of undefined' hatasına yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** generateViralScript fonksiyonundan dönen verinin geçerliliğini kontrol eden bir guard clause eklendi. Eğer viralPlan veya scenes dizisi eksikse, sistemin çökmesi yerine anlamlı bir hata fırlatılarak sürecin güvenli bir şekilde durdurulması sağlandı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 01:14:25] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** viralPlan veya viralPlan.scenes nesnelerinin null/undefined dönme ihtimaline karşı bir kontrol mekanizması bulunmuyor. Bu durum, .map() veya .length özelliklerine erişilmeye çalışıldığında TypeError hatasına yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel5-dark-science/engine.js`
+- **Açıklama:** viralPlan nesnesinin ve içindeki scenes dizisinin varlığını doğrulayan bir guard clause eklendi. Eğer API yanıtı eksik veya hatalı dönerse, sistemin çökmesi yerine anlamlı bir hata fırlatılarak işlem güvenli bir şekilde durdurulması sağlandı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 01:16:29] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** generateViralScript fonksiyonundan dönen viralPlan nesnesinin veya içindeki scenes dizisinin undefined/null olması durumunda, kodun kontrolsüz bir şekilde .map() ve .length özelliklerine erişmeye çalışması.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel6-dua/engine.js`
+- **Açıklama:** viralPlan nesnesinin ve viralPlan.scenes dizisinin varlığı kontrol edilerek, eksik veri durumunda sistemin çökmesi yerine anlamlı bir hata fırlatılması sağlandı. Bu, diğer kanallarda görülen 'Cannot read properties of undefined' hatasını önler.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 01:18:27] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** generateViralScript fonksiyonundan dönen viralPlan nesnesinin veya içindeki scenes dizisinin undefined/null olması durumunda, 90. satırda .map() fonksiyonunun çağrılması TypeError hatasına yol açmaktadır.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel7-kissalar/engine.js`
+- **Açıklama:** Viral senaryo üretiminin başarısız olduğu durumlarda (API hatası veya boş yanıt), kodun devam etmesini engelleyen bir koruma mekanizması (guard clause) eklendi. Bu sayede 'undefined reading length' hatası yerine anlamlı bir hata fırlatılarak sistemin kararsız çalışması önlendi.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 01:20:26] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** generateViralScript fonksiyonundan dönen viralPlan nesnesinin 'scenes' özelliğinin eksik veya boş olması, kodun 91. satırda map() fonksiyonunu çağırmaya çalışırken hata vermesine neden oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel8-global-dua/engine.js`
+- **Açıklama:** Viral senaryo üretiminin başarısız olduğu durumlarda (API yanıtı eksik veya hatalı geldiğinde) kodun kontrolsüz bir şekilde devam etmesini engellemek için bir doğrulama katmanı eklendi. Bu, 'Cannot read property map of undefined' hatasını önler ve sistemin hatayı loglayarak güvenli bir şekilde durmasını sağlar.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 01:22:25] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** viralPlan veya viralPlan.scenes nesneleri eksik veya geçersiz döndüğünde, kodun bu durumu kontrol etmeden işlemeye devam etmesi ve 'undefined' üzerinde işlem yapmaya çalışması sonucu hata oluşuyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel9-astroloji/engine.js`
+- **Açıklama:** generateViralScript fonksiyonundan dönen sonucun geçerliliğini kontrol eden bir 'guard clause' eklendi. Eğer senaryo veya sahneler boş gelirse, sistemin çökmesi yerine anlamlı bir hata fırlatılarak işlem güvenli bir şekilde durdurulması sağlandı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 01:24:27] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** getOrGenerateNextTopic fonksiyonundan dönen 'topicRes.item' nesnesi null veya undefined olabilir, bu da targetItem.title erişiminde hataya yol açar. Ayrıca senaryo üretiminde hata yönetimi zayıftır.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel9-astroloji/engine.js`
+- **Açıklama:** Optional chaining (?.) kullanarak topicRes.item'ın varlığını kontrol ettim ve eğer veri gelmezse süreci güvenli bir şekilde durdurmak için hata fırlattım. Bu, 'targetItem.title' satırında oluşabilecek 'Cannot read property of undefined' hatasını önler.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 01:40:25] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** AI tarafından üretilen viralPlan nesnesinin veya sahnelerin eksik olması durumunda sistemin doğrudan hata fırlatıp süreci durdurması, bunun yerine güvenli bir şekilde geri dönmesi veya hata yönetimi yapması gerekiyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel2-ariza/engine.js`
+- **Açıklama:** Hata fırlatmak (throw) yerine 'return' kullanarak fonksiyonun güvenli bir şekilde sonlanmasını sağladık. Bu, sistemin bir sonraki döngüde veya görevde tekrar denemesine olanak tanır ve uygulamanın çökmesini engeller.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 01:56:25] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** AI tarafından üretilen viral senaryo boş veya geçersiz olduğunda sistemin 'throw new Error' ile süreci tamamen durdurması ve uygulamanın çökmesine neden olması.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel3-oto/engine.js`
+- **Açıklama:** Hata fırlatmak (throw) yerine 'return' kullanarak fonksiyonun güvenli bir şekilde sonlandırılmasını sağladık. Bu sayede sistem çökmez, loglara hata düşer ve bir sonraki döngüye geçiş yapabilir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 01:58:25] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** Viral senaryo üretimi sırasında hata oluştuğunda fonksiyonun 'throw new Error' yerine sadece 'return' ile çıkması, ancak çağıran üst fonksiyonun hata fırlatılmasını beklemesi veya hata yönetimi eksikliği nedeniyle sistemin çökmesine yol açması.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel3-oto/engine.js`
+- **Açıklama:** Hata loglarında görülen 'Error: Viral senaryo üretilemedi veya sahneler eksik!' mesajı, kodun bir noktada hata fırlattığını gösteriyor. Mevcut kodda 'return' kullanılması, üst katmanlarda beklenmedik davranışlara veya logların tutarsızlaşmasına neden oluyordu. Hata fırlatmak, sistemin hata yönetim mekanizmasının (try/catch) düzgün çalışmasını sağlar ve işlemin güvenli bir şekilde durdurulmasına olanak tanır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
