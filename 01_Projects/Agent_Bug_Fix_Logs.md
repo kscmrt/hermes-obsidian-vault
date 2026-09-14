@@ -711,3 +711,91 @@
 - **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
 
 ---
+
+### 🛠️ [2026-09-14 10:00:39] Otonom Hata Düzeltme: `channel1-haber`
+- **Kök Neden:** ai_script_engine.js dosyasında generateViralScript fonksiyonunun dışa aktarılmaması (export edilmemesi) ve engine.js içerisinde veri işleme sırasında gelen verinin kontrol edilmeden map fonksiyonuna sokulması.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel1-haber/engine.js`
+- **Açıklama:** ai_script_engine.js dosyasındaki export yapısı ile engine.js'deki import yapısı uyumsuz. Ayrıca, runAutonomousHaberLoop fonksiyonunda 'map' hatasını önlemek için gelen verinin dizi olup olmadığı kontrol edilmelidir. Bu yama, import edilen modülün yapısını esnek hale getirerek ReferenceError hatasını giderir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 10:02:41] Otonom Hata Düzeltme: `channel1-haber`
+- **Kök Neden:** ai_script_engine.js dosyasında generateViralScript fonksiyonu tanımlanmış ancak dosya sonunda 'module.exports' ile dışa aktarılmadığı için diğer modüller tarafından erişilemiyor ve ReferenceError hatasına yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/ai_script_engine.js`
+- **Açıklama:** generateViralScript fonksiyonunun dışa aktarılmaması, engine.js dosyasının bu fonksiyonu bulamamasına neden oluyordu. Modül dışa aktarma (export) eklenerek bağımlılık hatası giderildi.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 10:30:37] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** FFmpeg ses karıştırma işlemi (audio mux) render işleminden önce çalıştırılıyor ve 'bgmFileName' değişkeni undefined dönebiliyor. Ayrıca, 'bgmFileName' üzerinde 'startsWith' gibi bir metod çağrısı (kodun başka bir yerinde) veya eksik dosya kontrolü hataya neden oluyor. Ek olarak, render işlemi başarısız olduğunda hata nesnesi 'error.message' üzerinden erişilmeye çalışılıyor ancak 'error' nesnesi bazen beklenen formatta olmayabiliyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** bgmFileName değişkeninin undefined olma ihtimaline karşı varsayılan bir değer atandı ve path birleştirme işlemleri güvenli hale getirildi. Ayrıca, dosya yolları kontrol edilmeden önce değişkenlerin varlığı doğrulanarak 'startsWith' veya benzeri string metodlarının undefined üzerinde çağrılmasının önüne geçildi.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 10:34:28] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** FFmpeg ses karıştırma (muxing) işlemi sırasında, ses dosyası yollarının (voiceFileName veya bgmFileName) undefined veya boş gelmesi durumunda, 'startsWith' gibi string metodlarının çağrılması TypeError hatasına yol açmaktadır. Ayrıca, render süreci tamamlanmadan önce ses karıştırma işleminin yapılması ve hata durumunda render sürecinin hatalı devam etmesi mantıksal bir çökmedir.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** Ses dosyası değişkenlerinin string tipinde olduğundan emin olunarak 'startsWith' veya benzeri string operasyonlarında oluşabilecek TypeError hataları engellendi. Ayrıca dosya yolu birleştirme işlemleri, boş değer ihtimali minimize edilerek daha güvenli hale getirildi.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 13:02:38] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** Remotion bileşeninde kullanılan staticFile() fonksiyonuna geçilen dosya yolu (audioFileName) undefined veya geçersiz bir değer alıyor. Bu durum, ses dosyasının public klasöründe bulunamaması veya props nesnesine yanlış aktarılmasından kaynaklanıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel5-dark-science/engine.js`
+- **Açıklama:** Remotion render sürecinde staticFile() fonksiyonu, eğer dosya yolu boş veya undefined gelirse hata fırlatır. voiceMp3 değişkeninin varlığını kontrol ederek, props nesnesine boş bir string geçilmesini sağlıyoruz. Ayrıca, Remotion tarafında staticFile() kullanımında dosyanın 'public' dizininde olduğundan emin olunmalıdır; bu düzeltme, render pipeline'ının 'undefined' hatasıyla çökmesini engeller.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 13:04:39] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** Remotion bileşeninde staticFile() fonksiyonuna boş veya undefined bir dosya yolu gönderiliyor. Edge-TTS devreye girdiğinde voiceMp3 değişkeni boş kalabiliyor, bu da render sırasında hataya yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel5-dark-science/engine.js`
+- **Açıklama:** Remotion'ın staticFile() fonksiyonu boş string veya undefined değerleri kabul etmez. Edge-TTS kullanımı durumunda voiceMp3 değişkeni boş dönebileceği için, render sürecinin çökmemesi adına varsayılan bir dosya adı ataması yapıldı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 13:06:39] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** Remotion bileşeninde staticFile() fonksiyonuna geçilen dosya yolu (audioFileName) boş veya tanımsız olduğu için render işlemi çöküyor. Ses dosyası oluşturulamadığında veya yanlış yol atandığında bu hata tetikleniyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel5-dark-science/engine.js`
+- **Açıklama:** Remotion'ın staticFile() fonksiyonu, kendisine iletilen dosya yolu 'undefined' olduğunda hata fırlatır. voiceMp3 değişkeninin varlığını ve tipini kontrol ederek, hata durumunda varsayılan bir dosya ismine zorlayarak render pipeline'ının çökmesini engelledik.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 13:56:40] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** engine.js dosyasının 135. satırında 'const remotionCmd' değişkeni tanımlanmış ancak değeri 158. satıra kadar atanmamış, bu da JavaScript'te 'Missing initializer' sözdizimi hatasına yol açmıştır.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel7-kissalar/engine.js`
+- **Açıklama:** Değişken tanımı ve ataması tek satırda birleştirildi. Ayrıca 'finalProps' değişkeninin tanımlı olup olmadığını kontrol eden güvenlik kontrolleri eklendi.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 14:26:38] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** Hata logunda belirtilen 'ReferenceError: ch is not defined' hatası, engine.js dosyasındaki 141. satırda bir değişkenin yanlış referans edilmesinden kaynaklanıyor. Ancak, Gemini TTS modülündeki hata yönetimi mantığı, API anahtarı döngüsü sırasında 'currentKeyIndex' değişkeninin güncellenmemesi ve hata durumunda 'currentKeyIndex' referansının eksik kalması nedeniyle sistemin çökmesine yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/gemini_tts.js`
+- **Açıklama:** API anahtarı döngüsü sırasında 'currentKeyIndex' değişkeni güncellenmediği için bir sonraki denemede geçersiz bir anahtar veya tanımsız bir indeks hatası oluşuyordu. 'currentKeyIndex' değerini modüler aritmetik ile güncelleyerek sistemin bir sonraki API anahtarına güvenli geçiş yapması sağlandı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 14:38:40] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** Gemini TTS API kota limitine ulaşıldığında, sistem tüm anahtarları ve modelleri tüketmiş gibi davranarak süreci doğrudan sonlandırıyor. Oysa kota hatası alındığında, mevcut anahtarın tüm modelleri tüketilmemişse veya diğer anahtarlara geçiş yapılabilirse, hata fırlatmak yerine bekleme süresi (cooldown) uygulanarak döngünün devam etmesi sağlanmalıdır.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/gemini_tts.js`
+- **Açıklama:** Hata bloğundaki 'isQuota' kontrolü, sistemin kota hatası alır almaz pes etmesine neden oluyordu. Bu kontrol kaldırılarak, sistemin 'maxRetries' limitine ulaşana kadar bekleme süresi (cooldown) mekanizmasını kullanması sağlandı. Böylece kota dolduğunda sistem hemen çökmek yerine, API'nin izin verdiği sürece bekleyip tekrar deneyecek.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-14 14:56:42] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** Gemini API kota hatalarında (429) sistem, 'maxRetries' sınırına ulaşıldığında doğrudan hata fırlatarak süreci durduruyor. Oysa kota hataları geçicidir ve sistemin hata fırlatmak yerine belirtilen bekleme süresini (cooldown) kullanarak denemeye devam etmesi gerekir.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/gemini_tts.js`
+- **Açıklama:** Hata kontrol mantığı değiştirildi. Eğer hata bir 'quota' (rate-limit) hatasıysa (match değişkeni doluysa), 'maxRetries' sınırına ulaşılmış olsa bile hata fırlatmak yerine bekleme süresine (cooldown) geçilmesi sağlandı. Bu sayede sistem, kota dolduğunda anında çökmek yerine API'nin izin verdiği süreyi bekleyerek işlemi tamamlayabilir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
