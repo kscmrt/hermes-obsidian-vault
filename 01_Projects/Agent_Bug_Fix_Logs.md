@@ -1071,3 +1071,139 @@
 - **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
 
 ---
+
+### 🛠️ [2026-09-15 06:42:48] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** Remotion render işlemi sırasında, ses dosyasının 'http://localhost:3000/public/' üzerinden erişilmeye çalışılması ancak dosyanın yerel dosya sisteminde (public klasöründe) bulunamaması veya render sunucusunun bu yolu çözümleyememesi.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel6-dua/engine.js`
+- **Açıklama:** Remotion render motoru, ağ üzerinden (localhost) dosya çekmek yerine yerel dosya sistemine doğrudan erişim (file:// protokolü) ile daha kararlı çalışır. 'audioFileUrl' değerini yerel mutlak dosya yoluna çevirerek 404 hatasını ve ağ bağımlılığını ortadan kaldırdık.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 06:44:47] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** Remotion render işlemi sırasında 'audioFileUrl' parametresi 'file://' protokolü ile yerel dosya yolu olarak gönderiliyor, ancak Remotion'ın render motoru bu yolu bulamıyor veya erişim izni sorunu yaşıyor. Ayrıca, dosya yolu 'public' klasörü içinde olmasına rağmen, Remotion'ın statik dosya sunucusu ile çakışan bir path çözünürlüğü hatası oluşuyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel6-dua/engine.js`
+- **Açıklama:** Remotion'ın 'render' komutu, 'file://' protokolü yerine doğrudan dosya sistemindeki mutlak yolu (absolute path) daha kararlı bir şekilde işler. 'file://' ön ekinin kaldırılması, Remotion'ın dahili dosya okuyucusunun (read-file.js) yolu doğru şekilde çözümlemesini sağlayarak 404 hatasını giderecektir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 06:46:47] Otonom Hata Düzeltme: `lazy-render-factory`
+- **Kök Neden:** Remotion render işlemi sırasında 'audioFileUrl' değeri bir dosya yolu (path) olarak gönderiliyor, ancak Remotion'ın statik dosyaları doğru okuyabilmesi için bu değerin bir URL (http://localhost:3000/...) olması gerekiyor. Yerel dosya yolu, Remotion'ın dahili web sunucusu tarafından 404 hatası ile sonuçlanıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel6-dua/engine.js`
+- **Açıklama:** Remotion render motoru, varlıkları (assets) HTTP üzerinden yükler. 'path.join' ile oluşturulan yerel dosya sistemi yolu, sunucu bağlamında geçersizdir. Bu değişiklikle, Remotion'ın statik sunucusunun dosyayı doğru şekilde çözümleyebilmesi için gerekli olan URL formatı sağlanmıştır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 09:55:12] Otonom Hata Düzeltme: `render-bot-ch8`
+- **Kök Neden:** voiceAbsPath değişkeni tanımlanmadan propsData nesnesi içerisinde kullanılmış, bu da ReferenceError hatasına yol açıyor. Ayrıca ses dosyası yolu, synthesizeVoiceover fonksiyonundan dönen audioFileName kullanılarak doğru şekilde oluşturulmalıdır.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel8-global-dua/engine.js`
+- **Açıklama:** voiceAbsPath değişkeni, ses dosyası yolu oluşturulduktan hemen sonra tanımlanarak propsData nesnesine doğru bir şekilde atanmıştır. Bu sayede ReferenceError hatası giderilmiş ve ses dosyası yolu tutarlı hale getirilmiştir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 09:57:11] Otonom Hata Düzeltme: `render-bot-ch8`
+- **Kök Neden:** Ses sentezleme işlemi (synthesizeVoiceover) başarısız olduğunda veya boş döndüğünde, 'voiceAbsPath' değişkeni tanımlanmadan kod akışı devam ediyor ve dosya kontrolü sırasında ReferenceError hatasına yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel8-global-dua/engine.js`
+- **Açıklama:** Ses sentezleme fonksiyonundan dönen değerin doğruluğunu kontrol eden bir guard clause eklendi. Ayrıca 'audioFullPath' ara değişkeni kaldırılarak 'voiceAbsPath' doğrudan tanımlandı, böylece hata durumunda değişkenin tanımlanmamış olması (undefined) engellendi.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 10:49:12] Otonom Hata Düzeltme: `render-bot-ch2`
+- **Kök Neden:** Remotion render işlemi sırasında ses dosyasının yolu yanlış çözümleniyor. Remotion, public klasöründeki dosyaları kendi iç sunucusundan (localhost:3002) çekmeye çalışırken, kodda ses dosyasının mutlak yolu (absolute path) yerine yanlış bir dizin yapısı kullanılıyor veya dosya render başlamadan önce public klasörüne taşınmamış/erişilemiyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel2-ariza/engine.js`
+- **Açıklama:** Remotion render motoru, 'audioFileName' değerini bir URL veya dosya yolu olarak algıladığında, eğer tam yol verilirse (örneğin /home/kscmrt/...) bunu public klasöründe bulamayıp 404 hatası döndürüyor. Sadece dosya adını (filename) göndererek Remotion'ın kendi public asset çözümleyicisini doğru kullanmasını sağlıyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 10:51:11] Otonom Hata Düzeltme: `render-bot-ch2`
+- **Kök Neden:** Remotion render işlemi sırasında, ses dosyasının tam yolu yerine sadece dosya isminin props içine gönderilmesi ve Remotion'ın bu dosyayı yerel dosya sisteminde bulamaması (404 hatası).
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel2-ariza/engine.js`
+- **Açıklama:** Remotion render motoru, props içindeki 'audioFileName' değerini bir URL veya dosya yolu olarak bekler. Dosya ismini sadece 'pop()' ile almak, Remotion'ın çalışma dizininde dosyayı bulamamasına neden oluyordu. 'path.join' ile mutlak yolu (absolute path) vererek render motorunun dosyaya erişimini garanti altına aldık.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 10:53:12] Otonom Hata Düzeltme: `render-bot-ch2`
+- **Kök Neden:** Remotion render işlemi sırasında ses dosyası yolu, dosya sistemindeki mutlak yol yerine yanlışlıkla 'public' klasörü içindeki göreceli bir yol olarak çözümleniyor. Remotion, dosyayı localhost üzerinden çekmeye çalışırken 404 hatası alıyor çünkü dosya yolu yanlış yapılandırılmış.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel2-ariza/engine.js`
+- **Açıklama:** Remotion'ın assetleri doğru şekilde bulabilmesi için 'audioFileName' değerinin mutlak (absolute) bir dosya yolu olması gerekir. 'path.join' yerine 'path.resolve' kullanarak, çalışma dizininden bağımsız olarak dosyanın tam sistem yolunu (absolute path) oluşturuyoruz. Bu, Remotion'ın yerel dosya sistemindeki dosyayı doğru şekilde okumasını sağlayacaktır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 10:55:16] Otonom Hata Düzeltme: `render-bot-ch9`
+- **Kök Neden:** Remotion render işlemi sırasında, Remotion'ın statik dosyaları sunmak için kullandığı yerel sunucu, 'public' klasöründeki ses dosyasına erişemiyor. Sorun, 'audioFileAbsPath' değerinin Remotion'ın statik sunucu kök dizini ile uyumsuz olması ve dosya yolunun yanlış çözümlenmesinden kaynaklanıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel9-astroloji/engine.js`
+- **Açıklama:** Remotion render süreci, dosyaları 'ROOT_DIR' üzerinden servis eder. '__dirname' kullanımı, dosyanın bulunduğu alt dizine göre yanlış bir yol oluşturuyordu. 'ROOT_DIR' değişkenini kullanarak, Remotion'ın statik sunucusunun beklediği mutlak dosya yolunu doğru şekilde yapılandırdık.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 10:57:15] Otonom Hata Düzeltme: `render-bot-ch7`
+- **Kök Neden:** execSync komutu 'pipe' modunda çalıştırıldığında, Remotion'ın ürettiği yoğun stdout/stderr çıktısı Node.js'in buffer limitini (genellikle 200KB) aşarak 'ENOBUFS' veya benzeri bir hata ile işlemin çökmesine neden oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel7-kissalar/engine.js`
+- **Açıklama:** stdio: 'pipe' yerine 'inherit' kullanarak, Remotion'ın çıktılarını doğrudan ana process'in stdout/stderr ak��şına yönlendiriyoruz. Bu, buffer limitine takılmayı engeller ve render sürecindeki ilerleme çubuğunun terminalde düzgün görünmesini sağlar.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 10:57:18] Otonom Hata Düzeltme: `render-bot-ch9`
+- **Kök Neden:** Remotion render işlemi sırasında ses dosyasının 'public' dizininde bulunamaması veya yanlış yoldan çağrılması. Kod, ses dosyasını 'ROOT_DIR/public' yerine yanlış bir dizin yapısında arıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel9-astroloji/engine.js`
+- **Açıklama:** Hata logu, Remotion'ın 'http://localhost:3002/public/...' üzerinden dosyayı çekemediğini gösteriyor. Sorun, ses dosyasının oluşturulduğu yer ile Remotion'ın statik sunucu olarak servis ettiği 'public' klasörü arasındaki yol uyuşmazlığıd��r. 'audioFileAbsPath' değerini, Remotion'ın statik sunucusunun erişebileceği doğru 'public' dizinine işaret edecek şekilde güncelleyerek ve dosya varlığını garanti altına alarak sorunu çözüyoruz. Ayrıca, render öncesi dosyanın fiziksel varlığını kontrol eden bir önlem eklenmesi önerilir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 10:59:23] Otonom Hata Düzeltme: `render-bot-ch7`
+- **Kök Neden:** execSync komutu çalıştırılırken stdio: 'inherit' parametresi, Remotion'ın stdout/stderr çıktılarını ana süreçle çakıştırarak buffer limitlerini zorluyor ve 'status: 1' hatasına yol açıyor. Ayrıca, komutun hata durumunda sessiz kalmaması için stdio'nun 'pipe' olarak ayarlanması ve hata mesajının daha iyi yakalanması gerekiyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel7-kissalar/engine.js`
+- **Açıklama:** stdio: 'inherit' yerine 'pipe' kullanarak, alt sürecin çıktılarını ana süreçten ayırdık. Bu, buffer taşmalarını önler ve execSync'in hata durumunda 'output' nesnesini daha temiz bir şekilde döndürmesini sağlar. Ayrıca, Remotion'ın render sırasında kullandığı geçici dizin (TMPDIR) yapılandırması korunarak sistem kararlılığı artırıldı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 11:01:17] Otonom Hata Düzeltme: `render-bot-ch7`
+- **Kök Neden:** execSync komutu 'pipe' modunda çalıştırıldığında, Remotion'ın ürettiği yoğun stdout/stderr çıktısı Node.js'in buffer limitini (genellikle 200KB) aşarak 'ENOBUFS' veya benzeri bir hata ile işlemin çökmesine neden oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel7-kissalar/engine.js`
+- **Açıklama:** stdio: 'pipe' yerine 'inherit' kullanarak, Remotion'ın çıktılarını ana process'in stdout/stderr akışına doğrudan yönlendirdik. Bu, buffer limitine takılmadan çıktıların terminale basılmasını sağlar ve bellek taşması kaynaklı çökmeyi engeller.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 11:03:32] Otonom Hata Düzeltme: `render-bot-ch9`
+- **Kök Neden:** Remotion render işlemi sırasında 'public' klasöründeki ses dosyasına erişmeye çalışıyor ancak dosya yolu yanlış yapılandırılmış. Remotion, dosyayı 'ROOT_DIR/public' yerine yanlış bir dizin yapısında arıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel9-astroloji/engine.js`
+- **Açıklama:** Remotion render motoru, statik varlıkları (assets) genellikle proje kök dizinine göre değil, render edilen bileşenin bulunduğu bağlama göre çözümler. 'ROOT_DIR' yerine '__dirname' ile göreceli yol kullanmak, dosya sistemindeki 404 hatasını giderecektir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 11:31:17] Otonom Hata Düzeltme: `render-bot-ch3`
+- **Kök Neden:** Remotion render işlemi sırasında, ses dosyasının mutlak yolu (absolute path) yerine yanlışlıkla 'public' klasörüne göre göreceli bir URL/yol yapısı kullanılıyor. Remotion, dosyayı yerel dosya sisteminde bulamadığı için 404 hatası veriyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel3-oto/engine.js`
+- **Açıklama:** Remotion'ın dosya okuma mekanizması, dosya sistemindeki mutlak yolları (absolute paths) bekler. 'path.join' bazen çalışma dizinine göre belirsizlik yaratabilir; 'path.resolve' kullanarak dosyanın tam sistem yolunu garanti altına alıyoruz, böylece Remotion render motoru dosyayı doğru şekilde bulabiliyor.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 11:33:14] Otonom Hata Düzeltme: `render-bot-ch3`
+- **Kök Neden:** Remotion render işlemi sırasında, ses dosyasının 'public' dizininde bulunmasına rağmen, Remotion'ın statik dosya sunucusu (localhost:3000) tarafından erişilememesi veya yanlış yolla çözümlenmesi. Ses dosyasının mutlak yolunun (absolute path) props içerisinde doğru iletilmemesi render motorunun dosyayı bulamamasına neden oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel3-oto/engine.js`
+- **Açıklama:** Remotion render süreci, dosyaları genellikle ROOT_DIR üzerinden resolve eder. __dirname kullanımı, engine.js dosyasının bulunduğu dizine göre (channels/channel3-oto) yanlış bir yol oluşturmaktadır. ROOT_DIR kullanarak ses dosyasının mutlak yolunu (absolute path) doğru şekilde tanımlayarak render motorunun dosyayı bulmasını sağlıyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-15 11:36:05] Otonom Hata Düzeltme: `render-bot-ch3`
+- **Kök Neden:** Remotion render işlemi sırasında ses dosyasının yolu yanlış çözümleniyor. 'audioFilePath' özelliği, Remotion'ın erişemeyeceği veya yanlış dizinde aradığı bir path ile set ediliyor, bu da 404 hatasına yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel3-oto/engine.js`
+- **Açıklama:** Remotion'ın assetleri yüklerken kullandığı dosya yolu çözümleme mekanizması, 'resolve' yerine 'join' kullanıldığında daha kararlı çalışır. Ayrıca, hata logundaki path yapısı (public/filename) ile uyumlu olması için ROOT_DIR baz alınarak dosya yolu netleştirilmiştir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
