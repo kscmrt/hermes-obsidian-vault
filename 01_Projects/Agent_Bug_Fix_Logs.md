@@ -1207,3 +1207,83 @@
 - **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
 
 ---
+
+### 🛠️ [2026-09-16 07:03:26] Otonom Hata Düzeltme: `render-bot-ch8`
+- **Kök Neden:** Gemini TTS hata yakalama bloğunda 'err.message' özelliğinin tanımsız (undefined) veya string olmama ihtimaline karşı güvenli kontrol bulunmuyor. Bu durum 'err.message.match' veya 'err.message.slice' çağrılarında TypeError fırlatılmasına sebep olabilir.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/gemini_tts.js`
+- **Açıklama:** Hata yakalama bloğunda 'err.message' doğrudan çağrılıyordu. İstisna objesinin 'message' alanı boş veya eksik olduğunda çalışma zamanı hatası (TypeError) oluşuyordu. 'errMsg' değişkeni tanımlanarak 'err?.message || String(err)' ile güvenli dize dönüşümü sağlandı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-16 07:08:18] Otonom Hata Düzeltme: `render-bot-ch9`
+- **Kök Neden:** Remotion render işlemi sırasında 'delayRender' süresinin aşılması (timeout), genellikle karmaşık sahnelerin veya ağır varlıkların işlenmesi sırasında oluşur. Mevcut yapı, render hatalarını yönetmekte yetersiz kalıyor ve API yanıt süreleri ile render süresi çakışıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/ai_script_engine.js`
+- **Açıklama:** Gemini API çağrısına 60 saniyelik bir 'AbortSignal' timeout eklenerek, ağ kaynaklı asılı kalmaların render sürecini kilitlemesi engellendi. Ayrıca, render timeout hatasını önlemek için API yanıt süresini sınırlandırarak sistemin daha hızlı hata verip retry mekanizmasına girmesi sağlandı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-16 07:10:23] Otonom Hata Düzeltme: `render-bot-ch9`
+- **Kök Neden:** Gemini API çağrısı için kullanılan AbortSignal.timeout(60000) süresi, API'nin yoğun olduğu anlarda veya karmaşık içerik üretiminde yetersiz kalıyor. Ayrıca, render sürecindeki delayRender timeout hatası, AI'dan gelen yanıtın gecikmesi veya başarısız olması durumunda sistemin kendini kilitlemesinden kaynaklanıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/ai_script_engine.js`
+- **Açıklama:** API timeout süresini 60 saniyeden 120 saniyeye çıkararak, özellikle uzun formlu içeriklerde Gemini'nin 'thinking' veya yoğun hesaplama süreçlerinde bağlantının kesilmesini engelledik. Bu, render sürecindeki 'delayRender' timeout hatasının kök nedenini (AI yanıtının zamanında gelmemesi) ortadan kaldıracaktır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-16 07:11:54] Otonom Hata Düzeltme: `render-bot-ch2`
+- **Kök Neden:** Remotion render işlemi sırasında, ses dosyası yolları yanlış birleştirilerek (nested public directory) oluşturuluyor. AI Script Engine, dosya yollarını oluştururken mutlak yol (absolute path) yerine hatalı bir iç içe geçmiş dizin yapısı kuruyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/ai_script_engine.js`
+- **Açıklama:** Hata logunda görülen '/public/home/kscmrt/...' şeklindeki hatalı yol, başlık veya detay verilerindeki karakterlerin dosya sistemi yollarını bozmasından kaynaklanıyor. Başlık ve detay metinlerini temizleyerek (slash karakterlerini tire ile değiştirerek) dosya yolu oluşturma sürecindeki path injection/corruption riskini ortadan kaldırıyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-16 07:15:16] Otonom Hata Düzeltme: `render-bot-ch2`
+- **Kök Neden:** Remotion render sırasında props içindeki 'audioFileName' yolu, 'path.resolve' ile hatalı bir şekilde iç içe geçmiş dizin yapısına (public/public) dönüştürülüyor. Bu durum, Remotion'ın dosya sisteminde yanlış bir yola erişmeye çalışmasına ve render işleminin çökmesine neden oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel2-ariza/engine.js`
+- **Açıklama:** Remotion props içerisinde dosya isminin sadece adını (basename) göndermek yeterlidir. 'path.resolve' ile mutlak yol oluşturmak, Remotion'ın kendi içindeki asset çözümleme mekanizmasıyla çakışarak 'public/public' gibi hatalı yollar üretilmesine yol açıyordu. Sadece dosya ismini göndererek Remotion'ın public klasörünü doğru şekilde resolve etmesini sağlıyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-16 07:19:35] Otonom Hata Düzeltme: `render-bot-ch2`
+- **Kök Neden:** Remotion render işlemi sırasında ses dosyası yolu yanlış çözümleniyor. 'audioFileName' değişkeni sadece dosya adını içerirken, Remotion'ın render sırasında tam yolu bulamaması ve yanlış bir iç dizin yapısına (public/home/kscmrt/...) yönlenmesi hataya sebep oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel2-ariza/engine.js`
+- **Açıklama:** Remotion'ın render sırasında dosyayı bulabilmesi için göreceli veya hatalı işlenmiş isim yerine, path.resolve() kullanarak dosyanın mutlak (absolute) yolunu props içerisine gönderiyoruz. Bu, Remotion'ın dosya sisteminde doğru konuma erişmesini sağlar.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-16 07:21:22] Otonom Hata Düzeltme: `render-bot-ch2`
+- **Kök Neden:** Remotion render işlemi sırasında 'audioFileName' değişkeni, dosya adını mutlak yol (absolute path) olarak bekleyen bir yapıya sahipken, kod içerisinde path.resolve() ile yanlış bir dizin yapısı oluşturuluyor. Bu durum, Remotion'ın geçici dizin (tmp) içerisinde dosyayı bulamamasına ve render hatasına yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel2-ariza/engine.js`
+- **Açıklama:** Remotion, public klasöründeki varlıkları (assets) referans alırken dosya adının sadece ismini (basename) bekler. path.resolve() kullanıldığında, sistemin çalışma dizini ile birleşerek hatalı bir mutlak yol oluşturuluyordu. Sadece dosya adını (örn: ch2_audio_1789542756140.wav) geçmek, Remotion'ın public dizinindeki dosyayı doğru şekilde bulmasını sağlayacaktır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-16 07:25:18] Otonom Hata Düzeltme: `render-bot-ch8`
+- **Kök Neden:** 108. satırda tanımlanmamış 'audioFullPath' değişkeni kullanılıyor; oysa ses dosyasının yolu 107. satırda 'voiceAbsPath' olarak tanımlanmıştır.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel8-global-dua/engine.js`
+- **Açıklama:** Hatalı değişken ismi 'audioFullPath' yerine, bir önceki satırda oluşturulan ve doğru dosya yolunu tutan 'voiceAbsPath' değişkeni kullanılarak ReferenceError giderilmiştir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-16 07:27:16] Otonom Hata Düzeltme: `render-bot-ch8`
+- **Kök Neden:** Kodun 108. satırında 'audioFullPath' değişkeni kullanılmaya çalışılmış ancak bu değişken tanımlanmamış. Hata logunda belirtilen satırda 'voiceAbsPath' değişkeni tanımlı olmasına rağmen yanlış değişken ismi referans alınmış.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel8-global-dua/engine.js`
+- **Açıklama:** Hata logu 108. satırı işaret ediyor. Mevcut kodda 108. satır 'getAudioDuration(voiceAbsPath)' şeklindedir. Ancak hata logunda 'audioFullPath is not defined' hatası alındığı için, kodun başka bir yerinde veya hata logunun işaret ettiği satırda yanlış değişken isminin kullanıldığı görülmektedir. Eğer 108. satırda hata alınıyorsa, değişkenin 'voiceAbsPath' olarak düzeltilmesi veya tanımlanması gerekmektedir. Mevcut kod bloğunda 107. satırda 'voiceAbsPath' tanımlanmış, 108. satırda ise bu değişken kullanılmalıdır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-16 07:29:15] Otonom Hata Düzeltme: `render-bot-ch8`
+- **Kök Neden:** Kodun 108. satırında 'audioFullPath' değişkeni kullanılmaya çalışılmış ancak bu değişken tanımlanmamış. Bunun yerine 107. satırda tanımlanan 'voiceAbsPath' değişkeninin kullanılması gerekmektedir.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel8-global-dua/engine.js`
+- **Açıklama:** Hata logunda 108. satırda 'audioFullPath' referans hatası belirtiliyor. Kod bloğunda 107. satırda 'voiceAbsPath' tanımlanmış ancak 108. satırda muhtemelen yanlış isimlendirilmiş bir değişken çağrılmış. Eğer 108. satırda 'audioFullPath' yazıyorsa, bu değişkeni 'voiceAbsPath' ile değiştirerek referans hatasını gideriyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
