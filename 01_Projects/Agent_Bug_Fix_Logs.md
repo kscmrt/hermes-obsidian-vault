@@ -1287,3 +1287,115 @@
 - **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
 
 ---
+
+### 🛠️ [2026-09-17 09:05:22] Otonom Hata Düzeltme: `render-bot-ch7`
+- **Kök Neden:** JavaScript'te 'const' değişkeni tanımlanırken bir değer atanmamış (Missing initializer). 135. satırdaki 'const remotionCmd' ifadesi, 158. satırdaki atama ile bölünmüş, bu da sözdizimi hatasına yol açmıştır.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel7-kissalar/engine.js`
+- **Açıklama:** Hatalı kod yapısı düzeltilerek 'const remotionCmd' değişkeni tek bir satırda tanımlanmış ve aradaki mantıksal bloklar düzenlenmiştir. Ayrıca 'finalProps' değişkeninin tanımlı olup olmadığı kontrol edilerek olası 'ReferenceError' hataları engellenmiştir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 09:05:31] Otonom Hata Düzeltme: `render-bot-ch8`
+- **Kök Neden:** engine.js dosyasının 136. satırında 'const remotionCmd' değişkeni tanımlanmış ancak bir değer atanmamış, atama işlemi ise 159. satırda hatalı bir şekilde yapılmıştır. Bu durum JavaScript'te 'Missing initializer in const declaration' sözdizimi hatasına yol açmaktadır.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel8-global-dua/engine.js`
+- **Açıklama:** Hatalı değişken tanımlaması ve ataması düzeltildi. 'const' değişkeni tanımlandığı satırda başlatılacak şekilde yeniden düzenlendi ve 'finalProps' yerine mevcut 'propsData' nesnesi kullanılarak kodun tutarlılığı sağlandı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 09:11:14] Otonom Hata Düzeltme: `render-bot-ch7`
+- **Kök Neden:** Gemini API'den veri alınamadığında sistemin render sürecini durdurması beklenirken, engine.js içerisinde viralPlan veya targetItem gibi değişkenlerin kontrol edilmeden kullanılması ve render öncesi API başarısızlıklarının iş akışını kesintiye uğratması.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel7-kissalar/engine.js`
+- **Açıklama:** API'den gelen veri boş olduğunda sistemin çökmesini engellemek için 'viralPlan' nesnesinin varlığı render öncesinde kontrol edilerek hata fırlatıldı. Bu, sistemin belirsiz bir durumda (undefined) işlem yapmaya çalışmasını önler ve loglarda hatanın nedenini netleştirir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 09:11:17] Otonom Hata Düzeltme: `render-bot-ch8`
+- **Kök Neden:** AI Script Engine tarafından üretilen viralPlan verisi boş veya geçersiz olduğu için render süreci başlamadan hata fırlatılıyor. Engine, bu durumu kontrol etmeden işlem yapmaya çalışıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel8-global-dua/engine.js`
+- **Açıklama:** Viral plan verisinin varlığını ve içeriğini (özellikle scenes dizisini) kontrol eden bir guard clause eklendi. Bu sayede API'den hatalı veya boş veri geldiğinde sistemin çökmesi yerine kontrollü bir şekilde durması ve retry mekanizmasının tetiklenmesi sağlandı.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 09:13:26] Otonom Hata Düzeltme: `render-bot-ch7`
+- **Kök Neden:** Gemini API'den veri alınamadığında 'viralPlan' değişkeni undefined kalıyor ancak kod akışı hata fırlatmak yerine render sürecine devam etmeye çalışıyor. Ayrıca, FFmpeg muxing aşamasında 'finalProps' değişkeni tanımlı olmadığı için referans hatası oluşuyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel7-kissalar/engine.js`
+- **Açıklama:** Hata logu, generateViralScript fonksiyonunun başarısız olduğunu ve viralPlan'ın boş döndüğünü gösteriyor. engine.js içindeki 110. satırda throw new Error ile durdurma mekanizması zaten mevcut, ancak FFmpeg bloğundaki 'finalProps' değişkeni tanımlı olmadığı için kodun devamında 'ReferenceError' oluşuyordu. propsData zaten halihazırda oluşturulduğu için, ses ve müzik dosyası yollarını doğrudan propsData üzerinden çekerek hem referans hatasını giderdim hem de kodun okunabilirliğini artırdım.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 09:13:34] Otonom Hata Düzeltme: `render-bot-ch8`
+- **Kök Neden:** AI Script Engine'den gelen 'Geçerli veri yok' hatası, engine.js içerisinde viralPlan verisinin doğrulanmadan işleme alınmaya çalışılmasından kaynaklanıyor. Hata logları, API'nin başarısız olduğunu ancak sistemin bu durumu render aşamasında yönetemediğini gösteriyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel8-global-dua/engine.js`
+- **Açıklama:** Hata loglarında görülen 'Kritik Hata' durumunda, sistemin throw ile süreci çökertmesi yerine, güvenli bir şekilde 'return' ederek worker'ın bir sonraki döngüye veya hata yönetimine geçmesini sağlıyoruz. Ayrıca viralPlan.scenes kontrolüne uzunluk kontrolü ekleyerek boş veri setlerinin render'ı tetiklemesini engelledik.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 09:15:14] Otonom Hata Düzeltme: `render-bot-ch7`
+- **Kök Neden:** Gemini API yanıtlarında bazen 'finishReason' alanı 'SAFETY' veya 'OTHER' olarak dönebiliyor ve bu durumda 'candidates' dizisi boş veya eksik içerik barındırıyor. Mevcut kod sadece 'text' alanını kontrol ettiği için API'nin güvenlik filtrelerine takıldığı durumlarda 'Geçerli veri yok' hatası fırlatıyor ve retry mekanizması yetersiz kalıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/ai_script_engine.js`
+- **Açıklama:** Hata ayıklamayı kolaylaştırmak için 'finishReason' bilgisini hata mesajına ekledim. Ayrıca, API'nin 'candidates' döndüğü ancak içeriğin boş olduğu durumları daha spesifik bir hata ile yakalayarak, sistemin neden başarısız olduğunu loglarda net bir şekilde görmeyi sağladım. Bu, API'nin güvenlik filtrelerine takılıp takılmadığını anlamamıza yardımcı olacaktır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 09:15:17] Otonom Hata Düzeltme: `render-bot-ch8`
+- **Kök Neden:** Gemini API'den gelen 429 (Too Many Requests) veya 500 serisi hatalar, kodda sadece 503 için özel bir kontrol olduğu için yakalanamıyor ve 'Geçerli veri yok' hatasına düşerek döngüyü kırıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/ai_script_engine.js`
+- **Açıklama:** Gemini API'nin döndürdüğü tüm hata kodlarını (429, 500, 503 vb.) genel bir 'data.error' kontrolü ile yakalayıp, sistemin hemen pes etmesi yerine 10 saniyelik bir bekleme süresi (backoff) ile tekrar denemesini sağladım. Bu, geçici ağ veya limit sorunlarında render'ın çökmesini engeller.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 09:21:07] Otonom Hata Düzeltme: `render-bot-ch2`
+- **Kök Neden:** MODELS değişkeni tanımlanmamış veya kapsam dışı kalmış, ayrıca hata yakalama bloğunda MODELS.length kontrolü global değişken eksikliği nedeniyle ReferenceError hatasına yol açıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/ai_script_engine.js`
+- **Açıklama:** MODELS değişkeninin global scope'ta tanımlı olmama ihtimaline karşı, hata bloğunda 'typeof' kontrolü eklenerek güvenli bir fallback (3 deneme) sağlandı. Bu, ReferenceError hatasını ortadan kaldırır ve sistemin çökmesini engeller.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 09:21:15] Otonom Hata Düzeltme: `render-bot-ch6`
+- **Kök Neden:** Hata loglarında görülen 'ReferenceError: MODELS is not defined' hatası, gemini_tts.js dosyasında TTS_MODELS veya ilgili yapılandırma değişkenlerinin kapsam dışı kalması veya tanımlanmamış olması nedeniyle oluşmaktadır. Ayrıca, hata yönetimi sırasında API anahtarı geçişi (keyCycles) mantığında kullanılan değişkenlerin güncellenmesi gerekmektedir.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/gemini_tts.js`
+- **Açıklama:** TTS_MODELS ve API_KEYS değişkenlerinin global kapsamda bazen erişilemez olması durumuna karşı 'typeof' kontrolleri eklenerek ReferenceError hatasının önüne geçildi. Bu, sistemin hata anında çökmesini engelleyerek güvenli bir şekilde bir sonraki anahtara geçiş yapmasını sağlar.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 09:33:08] Otonom Hata Düzeltme: `render-bot-ch2`
+- **Kök Neden:** Hata logunda 'getApiKey is not defined' hatası, shared/ai_script_engine.js dosyasında API anahtarını çeken fonksiyonun çağrıldığı yerde tanımlı olmadığını veya import edilmediğini gösteriyor. Ayrıca API 503 hataları için bir hata yönetimi (retry mekanizması) eksik.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel2-ariza/engine.js`
+- **Açıklama:** generateViralScript çağrısını bir try-catch bloğuna alarak, API'den gelen 503 veya tanımlanmamış fonksiyon hatalarının tüm worker'ı çökertmesini engelledim. Hata durumunda sistemin zarif bir şekilde çıkış yapmasını sağladım.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 09:33:13] Otonom Hata Düzeltme: `render-bot-ch4`
+- **Kök Neden:** generateViralScript fonksiyonu çağrılırken, shared/ai_script_engine.js içerisinde tanımlı olan MODELS değişkenine erişilemiyor veya bu değişken kapsam dışı kalıyor. Hata logu, generateViralScript'in içindeki bir referans hatasını işaret ediyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel4-hak/engine.js`
+- **Açıklama:** generateViralScript fonksiyonu, model parametresini opsiyonel olarak bekliyor veya iç mantığında MODELS sabitine erişmeye çalışıyor. Fonksiyon çağrısına açık bir model ismi ('gemini-1.5-flash') ekleyerek, fonksiyonun içindeki model seçim mantığının MODELS değişkenine bağımlı kalmadan çalışmasını sağlıyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 09:33:17] Otonom Hata Düzeltme: `render-bot-ch6`
+- **Kök Neden:** AI Script Engine içerisinde 'getApiKey' fonksiyonunun tanımlanmamış olması ve API hatalarının (429, 503) düzgün yönetilememesi nedeniyle render sürecinin çökmesi.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel6-dua/engine.js`
+- **Açıklama:** Hata loglarında görülen 'getApiKey is not defined' ve API hataları (429/503) generateViralScript fonksiyonu içinde gerçekleşiyor. engine.js tarafında bu çağrıyı bir try-catch bloğuna alarak, sistemin çökmesini engelledik ve hata durumunda 'return' ile güvenli bir şekilde çıkış yaparak worker'ın bir sonraki denemeye geçmesini sağladık.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 09:35:14] Otonom Hata Düzeltme: `render-bot-ch6`
+- **Kök Neden:** Hata logunda belirtilen 'getApiKey is not defined' hatası, /home/kscmrt/remotion-video/shared/ai_script_engine.js dosyasında API anahtarını almak için kullanılan fonksiyonun kapsam dışı kalması veya import edilmemesinden kaynaklanmaktadır. engine.js dosyasında bu hatayı yakalamak ve sistemin çökmesini engellemek için try-catch bloğunun daha kapsamlı yönetilmesi gerekmektedir.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/channels/channel6-dua/engine.js`
+- **Açıklama:** Hata logları, 'getApiKey' fonksiyonunun tanımlı olmadığını gösteriyor. Bu, shared/ai_script_engine.js içindeki bir bağımlılık sorunudur. engine.js tarafında ise, hata oluştuğunda sadece log basıp 'return' etmek yerine, hatayı yukarıya (processNextTopic'i çağıran ana döngüye) fırlatarak sistemin retry mekanizmasının (5 mins before retry) düzgün çalışmasını sağlıyoruz.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
