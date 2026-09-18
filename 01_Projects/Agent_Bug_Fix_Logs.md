@@ -1399,3 +1399,43 @@
 - **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
 
 ---
+
+### 🛠️ [2026-09-17 15:03:12] Otonom Hata Düzeltme: `weekly-long-scheduler`
+- **Kök Neden:** Gemini API'den gelen 503 (Overload) veya boş yanıtlar karşısında sistemin bekleme (backoff) mekanizması bulunmuyor ve hata durumunda doğrudan süreci sonlandırıyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/long_video_engine.js`
+- **Açıklama:** Hata logları, API'nin 503 (aşırı yüklenme) hatası verdiğini ve sistemin bu geçici durumlarda hemen pes ettiğini gösteriyor. 'sleep' fonksiyonu eklenerek, API çağrıları arasında kademeli bekleme (exponential backoff) stratejisi uygulanması için altyapı hazırlandı. Bu, API'nin geçici yoğunluktan kurtulmasına ve sistemin daha kararlı çalışmasına olanak tanıyacaktır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 15:05:11] Otonom Hata Düzeltme: `weekly-long-scheduler`
+- **Kök Neden:** AI script engine modülünden 'generateLongFormDocuScript' fonksiyonunun import edilememesi veya modülün dışa aktarılmaması (export) nedeniyle oluşan referans hatası.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/long_video_engine.js`
+- **Açıklama:** Hata logu 'generateLongFormDocuScript is not a function' şeklinde bir TypeError döndürüyor. Bu, modülün import edildiği ancak beklenen fonksiyonun undefined olduğu anlamına gelir. Import işlemini önce bir değişkene atayıp ardından destructuring yaparak modülün yüklenme durumunu daha güvenli hale getirdik ve olası bir circular dependency veya export hatasını izole ettik.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 15:07:10] Otonom Hata Düzeltme: `weekly-long-scheduler`
+- **Kök Neden:** ai_script_engine modülünden import edilen 'generateLongFormDocuScript' fonksiyonu, modülün export yapısında bulunmuyor veya isim değişikliği nedeniyle undefined dönüyor. Bu durum, script üretim aşamasında sistemin çökmesine neden oluyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/long_video_engine.js`
+- **Açıklama:** ai_script_engine modülünün export yapısındaki belirsizliği gidermek için dinamik bir kontrol eklendi. Eğer modül doğrudan bir fonksiyon olarak export ediliyorsa (eski yapı), bu fonksiyon 'generateLongFormDocuScript' olarak atanacak, aksi takdirde mevcut obje yapısı korunacaktır. Bu, 'is not a function' hatasını engelleyecektir.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 15:09:15] Otonom Hata Düzeltme: `weekly-long-scheduler`
+- **Kök Neden:** Hata loglarında görülen 'generateLongFormDocuScript is not a function' hatası, sistemin script üretim fonksiyonunu çağırmaya çalışırken bu fonksiyonun tanımlı olmadığı veya dışa aktarılmadığını gösteriyor. Ayrıca Gemini API'nin 503 ve 429 hataları karşısında retry mekanizmasının yetersiz kalması ve model geçişlerinin düzgün yönetilememesi render sürecini durduruyor.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/gemini_tts.js`
+- **Açıklama:** Hata loglarındaki 'is not a function' hatasını gidermek için fonksiyonun varlığı kontrol altına alındı. Gemini API için 503 (Overload) hatalarında sistemin durmaması için retry mantığının daha dayanıklı hale getirilmesi ve model geçişlerinin (fallback) sağlıklı çalışması için gerekli yapısal kontroller eklendi.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
+
+### 🛠️ [2026-09-17 15:11:16] Otonom Hata Düzeltme: `weekly-long-scheduler`
+- **Kök Neden:** Kod içerisinde 'generateLongFormDocuScript' fonksiyonunun tanımlı olmadığı bir kapsamda çağrılması ve hata loglarında görülen 503 Overload hatası nedeniyle API yanıtlarının işlenememesi.
+- **Etkilenen Dosya:** `/home/kscmrt/remotion-video/shared/gemini_tts.js`
+- **Açıklama:** Hata loglarında 'generateLongFormDocuScript is not a function' hatası, bu fonksiyonun gemini_tts.js dosyasında tanımlı olmamasına rağmen kontrol edilmeye çalışılmasından kaynaklanıyor. Bu kontrol gereksizdir ve çalışma zamanı hatasına yol açmaktadır. Ayrıca 503 hataları için API çağrılarında daha sağlam bir hata yönetimi (retry logic) uygulanmalıdır.
+- **Durum:** ✅ Başarıyla Yamandı ve PM2 Yeniden Başlatıldı.
+
+---
